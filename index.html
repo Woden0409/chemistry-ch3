@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第三章 理化簡報</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #0f172a;
+            color: #f1f5f9;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 頂部導覽列 */
+        .top-bar {
+            height: 56px;
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            gap: 8px;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .top-bar .brand {
+            font-weight: 900;
+            font-size: 1.1rem;
+            color: #f1f5f9;
+            margin-right: 24px;
+            white-space: nowrap;
+        }
+
+        .tab-btn {
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: 1px solid transparent;
+            background: transparent;
+            color: #94a3b8;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            background: #334155;
+            color: #f1f5f9;
+        }
+
+        .tab-btn.active {
+            background: #3b82f6;
+            color: #ffffff;
+            border-color: #60a5fa;
+        }
+
+        /* 歡迎畫面 */
+        .welcome {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .welcome.hidden { display: none; }
+
+        .chapter-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 32px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .chapter-card:hover {
+            transform: translateY(-4px);
+            border-color: #3b82f6;
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
+        }
+
+        /* iframe 容器 */
+        .frame-container {
+            flex: 1;
+            display: none;
+        }
+
+        .frame-container.active {
+            display: block;
+        }
+
+        .frame-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        @media (max-width: 768px) {
+            .top-bar {
+                flex-wrap: wrap;
+                height: auto;
+                padding: 8px 12px;
+                gap: 4px;
+            }
+            .top-bar .brand {
+                width: 100%;
+                margin-bottom: 4px;
+                margin-right: 0;
+                font-size: 0.95rem;
+            }
+            .tab-btn {
+                padding: 6px 10px;
+                font-size: 0.7rem;
+            }
+            .welcome { padding: 20px; }
+            .chapter-card { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 頂部導覽 -->
+    <div class="top-bar">
+        <div class="brand">CH3 理化簡報</div>
+        <button class="tab-btn" onclick="showWelcome()" id="tab-home">首頁</button>
+        <button class="tab-btn" onclick="loadPage('3-1.html', 0)" id="tab-0">3-1 電解質</button>
+        <button class="tab-btn" onclick="loadPage('3-2.html', 1)" id="tab-1">3-2 酸與鹼</button>
+        <button class="tab-btn" onclick="loadPage('3-3.html', 2)" id="tab-2">3-3 pH 值</button>
+        <button class="tab-btn" onclick="loadPage('3-4.html', 3)" id="tab-3">3-4 酸鹼反應</button>
+    </div>
+
+    <!-- 歡迎畫面 -->
+    <div class="welcome" id="welcome">
+        <h1 class="text-3xl md:text-6xl font-black text-white mb-4">第三章</h1>
+        <div class="w-24 h-1.5 bg-blue-500 mb-6"></div>
+        <p class="text-lg md:text-2xl text-slate-400 mb-10 md:mb-16 tracking-widest">酸、鹼、鹽</p>
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-5xl">
+            <div class="chapter-card" onclick="loadPage('3-1.html', 0)">
+                <div class="text-4xl font-black text-blue-400 mb-3">3-1</div>
+                <p class="text-slate-300 font-bold">電解質與解離</p>
+                <p class="text-xs text-slate-500 mt-2">導電實驗 / 電離說 / 電中性</p>
+            </div>
+            <div class="chapter-card" onclick="loadPage('3-2.html', 1)">
+                <div class="text-4xl font-black text-red-400 mb-3">3-2</div>
+                <p class="text-slate-300 font-bold">酸與鹼的性質</p>
+                <p class="text-xs text-slate-500 mt-2">解離定義 / 化學性質 / 指示劑</p>
+            </div>
+            <div class="chapter-card" onclick="loadPage('3-3.html', 2)">
+                <div class="text-4xl font-black text-green-400 mb-3">3-3</div>
+                <p class="text-slate-300 font-bold">酸鹼強弱與 pH</p>
+                <p class="text-xs text-slate-500 mt-2">莫耳濃度 / 離子積 / pH 計算</p>
+            </div>
+            <div class="chapter-card" onclick="loadPage('3-4.html', 3)">
+                <div class="text-4xl font-black text-cyan-400 mb-3">3-4</div>
+                <p class="text-slate-300 font-bold">酸鹼反應</p>
+                <p class="text-xs text-slate-500 mt-2">中和反應 / 滴定實驗 / 鹽類</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- iframe 容器 -->
+    <div class="frame-container" id="frame-container">
+        <iframe id="content-frame" src=""></iframe>
+    </div>
+
+    <script>
+        let activeTab = -1;
+
+        function clearTabs() {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        }
+
+        function showWelcome() {
+            clearTabs();
+            document.getElementById('tab-home').classList.add('active');
+            document.getElementById('welcome').classList.remove('hidden');
+            document.getElementById('frame-container').classList.remove('active');
+            document.getElementById('content-frame').src = '';
+            activeTab = -1;
+        }
+
+        function loadPage(url, index) {
+            clearTabs();
+            document.getElementById(`tab-${index}`).classList.add('active');
+            document.getElementById('welcome').classList.add('hidden');
+            document.getElementById('frame-container').classList.add('active');
+            document.getElementById('content-frame').src = url + '?t=' + Date.now();
+            activeTab = index;
+        }
+
+        // 鍵盤快捷鍵：數字鍵 1-4 切換章節
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '1') loadPage('3-1.html', 0);
+            if (e.key === '2') loadPage('3-2.html', 1);
+            if (e.key === '3') loadPage('3-3.html', 2);
+            if (e.key === '4') loadPage('3-4.html', 3);
+            if (e.key === 'Escape') showWelcome();
+        });
+
+        // 初始狀態
+        document.getElementById('tab-home').classList.add('active');
+    </script>
+</body>
+</html>

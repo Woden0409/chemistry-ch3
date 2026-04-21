@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3-2 酸與鹼的性質</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #0f172a;
+            color: #f1f5f9;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .slide {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            padding: 40px 80px;
+            box-sizing: border-box;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.5s ease-out forwards;
+            padding-bottom: 80px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* 資訊卡片 */
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        /* 實驗模擬器 */
+        .beaker {
+            position: relative;
+            width: 150px;
+            height: 130px;
+            border: 3px solid #94a3b8;
+            border-top: none;
+            border-radius: 0 0 20px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+        }
+        .liquid {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 70%;
+            background: rgba(56, 189, 248, 0.2);
+            transition: all 0.8s;
+        }
+        /* 液面波動 */
+        .liquid::before {
+            content: '';
+            position: absolute;
+            top: -4px; left: -10%;
+            width: 120%; height: 10px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 50%;
+            animation: wave 3s ease-in-out infinite;
+        }
+        @keyframes wave {
+            0%, 100% { transform: translateX(-5%) scaleY(1); }
+            50% { transform: translateX(5%) scaleY(1.5); }
+        }
+        /* 液體發光 */
+        .reacting .liquid {
+            box-shadow: inset 0 0 20px rgba(255,255,255,0.1);
+        }
+
+        /* 氣泡 — 更真實的物理效果 */
+        .bubble {
+            position: absolute;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(255,255,255,0.2));
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            opacity: 0;
+            bottom: 10px;
+        }
+        .reacting .bubble { animation: rise 2s infinite ease-out; }
+        .reacting .bubble:nth-child(odd) { animation-duration: 2.5s; }
+        .reacting .bubble:nth-child(even) { animation-duration: 1.8s; }
+        @keyframes rise {
+            0% { transform: translateY(0) translateX(0) scale(0.3); opacity: 0; }
+            15% { opacity: 0.9; }
+            50% { transform: translateY(-50px) translateX(3px) scale(0.8); opacity: 0.7; }
+            80% { opacity: 0.3; }
+            100% { transform: translateY(-100px) translateX(-2px) scale(1); opacity: 0; }
+        }
+
+        /* 金屬片溶解效果 */
+        .reacting .metal-piece {
+            animation: dissolve 4s ease-in forwards;
+        }
+        @keyframes dissolve {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0.3; transform: scale(0.5); }
+        }
+
+        .fat-layer {
+            position: absolute;
+            top: 30%;
+            width: 100%;
+            height: 15px;
+            background: linear-gradient(180deg, #fde68a, #fbbf24);
+            opacity: 0.8;
+            transition: opacity 3s ease, transform 3s ease;
+        }
+        .reacting .fat-layer { opacity: 0; transform: scaleY(0); }
+
+        /* 導覽按鈕 */
+        .nav-btn {
+            background: #334155;
+            color: #f1f5f9;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid #475569;
+        }
+        .nav-btn:hover:not(:disabled) { background: #3b82f6; border-color: #60a5fa; }
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* 指示劑顏色標籤 */
+        .color-dot { width: 16px; height: 16px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+        @media (max-width: 768px) {
+            body { overflow: auto; height: auto; }
+            .slide { padding: 20px 16px; height: auto; min-height: 100vh; }
+            .slide.active { padding-bottom: 100px; overflow-y: auto; }
+            .nav-btn { padding: 8px 16px; font-size: 0.85rem; }
+            .nav-bar-bottom { bottom: 8px; gap: 8px; }
+            .nav-bar-bottom #pageNum { padding: 0 8px; font-size: 0.8rem; }
+            .beaker { width: 100px; height: 90px; }
+            .fat-layer { height: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Slide 1: 封面 -->
+    <div class="slide active" id="s0">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-7xl font-black text-white mb-6">3-2 酸和鹼</h1>
+            <div class="w-32 h-1.5 bg-blue-500 mx-auto mb-8"></div>
+            <p class="text-2xl text-slate-400 font-medium tracking-widest">從解離觀點看酸鹼的化學本質</p>
+        </div>
+    </div>
+
+    <!-- Slide 2: 酸與鹼的定義 -->
+    <div class="slide" id="s1">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-blue-500 pl-6">一、酸與鹼的解離定義</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl">
+            <div class="glass-card border-t-4 border-red-500">
+                <h3 class="text-2xl font-bold text-red-400 mb-6 underline decoration-2 underline-offset-8">酸 (Acid)</h3>
+                <p class="text-slate-300 mb-4 font-bold">溶於水可解離出 H⁺</p>
+                <div class="space-y-3 font-mono text-sm">
+                    <p class="bg-slate-900/50 p-2 rounded">HCl → H⁺ + Cl⁻</p>
+                    <p class="bg-slate-900/50 p-2 rounded">H₂SO₄ → 2H⁺ + SO₄²⁻</p>
+                    <p class="bg-slate-900/50 p-2 rounded">CH₃COOH → H⁺ + CH₃COO⁻</p>
+                </div>
+                <div class="mt-6 text-sm text-slate-400">通式：H⁺ + 酸根離子</div>
+            </div>
+            <div class="glass-card border-t-4 border-blue-500">
+                <h3 class="text-2xl font-bold text-blue-400 mb-6 underline decoration-2 underline-offset-8">鹼 (Base)</h3>
+                <p class="text-slate-300 mb-4 font-bold">溶於水可解離出 OH⁻</p>
+                <div class="space-y-3 font-mono text-sm">
+                    <p class="bg-slate-900/50 p-2 rounded">NaOH → Na⁺ + OH⁻</p>
+                    <p class="bg-slate-900/50 p-2 rounded">Ca(OH)₂ → Ca²⁺ + 2OH⁻</p>
+                    <p class="bg-slate-900/50 p-2 rounded">NH₃ + H₂O → NH₄⁺ + OH⁻</p>
+                </div>
+                <div class="mt-6 text-sm text-slate-400">通式：金屬離子 + OH⁻</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: 酸的化學性質 -->
+    <div class="slide" id="s2">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-red-500 pl-6">二、酸的共同性質</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 w-full max-w-6xl items-center">
+            <div class="space-y-4">
+                <div class="bg-slate-800/50 p-4 rounded-lg flex items-center gap-4">
+                    <div class="w-10 h-10 rounded bg-red-900/30 flex items-center justify-center font-bold text-red-400">1</div>
+                    <p>水溶液有酸味，且溶於水會<span class="text-red-400 font-bold">放熱</span>。</p>
+                </div>
+                <div class="bg-slate-800/50 p-4 rounded-lg flex items-center gap-4">
+                    <div class="w-10 h-10 rounded bg-red-900/30 flex items-center justify-center font-bold text-red-400">2</div>
+                    <p>電解質：水溶液可導電。</p>
+                </div>
+                <div class="bg-slate-800/50 p-4 rounded-lg flex items-center gap-4">
+                    <div class="w-10 h-10 rounded bg-red-900/30 flex items-center justify-center font-bold text-red-400">3</div>
+                    <p>與活性金屬反應 → 產生 <span class="text-red-400 font-bold">H₂ (氫氣)</span>。</p>
+                </div>
+                <div class="bg-slate-800/50 p-4 rounded-lg flex items-center gap-4">
+                    <div class="w-10 h-10 rounded bg-red-900/30 flex items-center justify-center font-bold text-red-400">4</div>
+                    <p>與碳酸鹽反應 → 產生 <span class="text-red-400 font-bold">CO₂ (二氧化碳)</span>。</p>
+                </div>
+            </div>
+            <div class="flex justify-center gap-6 md:gap-12 flex-wrap">
+                <div class="flex flex-col items-center">
+                    <p class="mb-2 text-xs font-bold text-slate-300">HCl + Zn (鋅片)</p>
+                    <div class="beaker" id="acid-metal">
+                        <div class="liquid"></div>
+                        <div class="metal-piece absolute bottom-2 left-1/2 -translate-x-1/2 w-10 h-4 bg-slate-400 rounded-sm"></div>
+                        <div class="bubble w-3 h-3" style="left:30%; animation-delay:0s;"></div>
+                        <div class="bubble w-4 h-4" style="left:42%; animation-delay:0.3s;"></div>
+                        <div class="bubble w-2 h-2" style="left:55%; animation-delay:0.6s;"></div>
+                        <div class="bubble w-5 h-5" style="left:65%; animation-delay:0.9s;"></div>
+                        <div class="bubble w-3 h-3" style="left:48%; animation-delay:1.2s;"></div>
+                    </div>
+                    <p class="mt-2 text-sm font-bold text-red-400">產生 H₂↑</p>
+                </div>
+                <div class="flex flex-col items-center">
+                    <p class="mb-2 text-xs font-bold text-slate-300">HCl + CaCO₃</p>
+                    <div class="beaker" id="acid-carbonate">
+                        <div class="liquid" style="background: rgba(167, 139, 250, 0.2);"></div>
+                        <div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-12 h-6 bg-slate-200 border border-slate-400 rounded-sm"></div>
+                        <div class="bubble w-2 h-2" style="left:30%; animation-delay:0s;"></div>
+                        <div class="bubble w-3 h-3" style="left:45%; animation-delay:0.3s;"></div>
+                        <div class="bubble w-2 h-2" style="left:60%; animation-delay:0.2s;"></div>
+                    </div>
+                    <p class="mt-2 text-sm font-bold text-purple-400">產生 CO₂↑</p>
+                </div>
+            </div>
+        </div>
+        <div class="mt-10 flex gap-4">
+            <button class="nav-btn" onclick="startAcidAnim()">觀察酸的反應</button>
+            <button class="nav-btn bg-slate-600" onclick="resetAcidAnim()">重置</button>
+        </div>
+    </div>
+
+    <!-- Slide 4: 鹼的化學性質 -->
+    <div class="slide" id="s3">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-blue-500 pl-6">三、鹼的共同性質</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 w-full max-w-6xl items-center">
+            <div class="space-y-4">
+                <div class="bg-slate-800/50 p-4 rounded-lg flex items-center gap-4">
+                    <div class="w-10 h-10 rounded bg-blue-900/30 flex items-center justify-center font-bold text-blue-400">1</div>
+                    <p>有澀味、具<span class="text-blue-400 font-bold">滑膩感</span>，溶於水亦會<span class="text-red-400 font-bold">放熱</span>。</p>
+                </div>
+                <div class="bg-slate-800/50 p-4 rounded-lg flex items-center gap-4">
+                    <div class="w-10 h-10 rounded bg-blue-900/30 flex items-center justify-center font-bold text-blue-400">2</div>
+                    <p>電解質：水溶液可導電。</p>
+                </div>
+                <div class="bg-slate-800/50 p-4 rounded-lg flex items-center gap-4">
+                    <div class="w-10 h-10 rounded bg-blue-900/30 flex items-center justify-center font-bold text-blue-400">3</div>
+                    <p>具清潔作用：可<span class="text-blue-400 font-bold">溶解油脂</span>。</p>
+                </div>
+                <div class="bg-slate-800/50 p-4 rounded-lg flex items-center gap-4 border border-yellow-900/30">
+                    <p class="text-sm text-yellow-500">注意：鹼不與金屬、碳酸鹽反應。</p>
+                </div>
+            </div>
+            <div class="flex flex-col items-center">
+                <p class="mb-2 text-xs font-bold text-slate-300">NaOH 水溶液 + 油脂</p>
+                <div class="beaker" id="base-beaker">
+                    <div class="liquid" style="background: rgba(37, 99, 235, 0.2);"></div>
+                    <div class="fat-layer"></div>
+                </div>
+                <p class="mt-2 text-sm font-bold text-blue-400">油脂被鹼溶解（皂化）</p>
+                <div class="mt-4 flex gap-4">
+                    <button class="nav-btn" onclick="startBaseAnim()">啟動鹼反應</button>
+                    <button class="nav-btn bg-slate-600" onclick="resetBaseAnim()">重置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: 酸鹼指示劑 -->
+    <div class="slide" id="s4">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-blue-500 pl-6">四、酸鹼指示劑顏色變化</h2>
+        <div class="w-full max-w-5xl overflow-hidden rounded-2xl border border-slate-700 shadow-2xl">
+            <table class="w-full text-left">
+                <thead class="bg-slate-800 text-slate-300">
+                    <tr>
+                        <th class="p-6">指示劑種類</th>
+                        <th class="p-6">酸性</th>
+                        <th class="p-6">中性</th>
+                        <th class="p-6">鹼性</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800 bg-slate-900/50">
+                    <tr>
+                        <td class="p-6 font-bold text-blue-400">石蕊試紙</td>
+                        <td class="p-6 text-red-400 font-bold">變為 紅色</td>
+                        <td class="p-6 text-slate-500">不變色</td>
+                        <td class="p-6 text-blue-400 font-bold">變為 藍色</td>
+                    </tr>
+                    <tr>
+                        <td class="p-6 font-bold text-blue-400">酚酞指示劑</td>
+                        <td class="p-6 text-slate-500">無色</td>
+                        <td class="p-6 text-slate-500">無色</td>
+                        <td class="p-6 text-pink-500 font-bold">變為 紅色</td>
+                    </tr>
+                    <tr>
+                        <td class="p-6 font-bold text-blue-400">廣用試紙</td>
+                        <td class="p-6"><span class="color-dot bg-red-500"></span>紅～黃</td>
+                        <td class="p-6"><span class="color-dot bg-green-500"></span>綠色</td>
+                        <td class="p-6"><span class="color-dot bg-purple-600"></span>藍～紫</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Slide 6: 常見酸與鹼 (講義整理) -->
+    <div class="slide" id="s5">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-blue-500 pl-6">五、常見化合物特點</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full max-w-6xl">
+            <div class="glass-card">
+                <h4 class="text-red-400 font-bold border-b border-red-900/50 pb-2 mb-4">常見酸</h4>
+                <ul class="text-sm space-y-3 text-slate-400">
+                    <li>● <strong class="text-slate-200">硫酸 (H₂SO₄)</strong>：強酸，稀釋須「酸加水」。</li>
+                    <li>● <strong class="text-slate-200">鹽酸 (HCl)</strong>：有刺激性，用於除水垢。</li>
+                    <li>● <strong class="text-slate-200">硝酸 (HNO₃)</strong>：強酸，具氧化性。</li>
+                    <li>● <strong class="text-slate-200">醋酸 (CH₃COOH)</strong>：弱酸，食醋成分。</li>
+                </ul>
+            </div>
+            <div class="glass-card">
+                <h4 class="text-blue-400 font-bold border-b border-blue-900/50 pb-2 mb-4">常見鹼</h4>
+                <ul class="text-sm space-y-3 text-slate-400">
+                    <li>● <strong class="text-slate-200">氫氧化鈉 (NaOH)</strong>：強鹼，清潔劑主成份。</li>
+                    <li>● <strong class="text-slate-200">氫氧化鈣 (Ca(OH)₂)</strong>：石灰水，檢測 CO₂。</li>
+                    <li>● <strong class="text-slate-200">氨水 (NH₃)</strong>：弱鹼，具刺激臭味。</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: 總結頁 -->
+    <div class="slide" id="s6">
+        <div class="text-center">
+            <h2 class="text-3xl md:text-5xl font-black mb-12">考前重點 Check!</h2>
+            <div class="grid grid-cols-2 gap-4 max-w-2xl mx-auto text-left">
+                <div class="bg-slate-800 p-4 rounded border-l-4 border-blue-500 text-sm">酸解離出 H⁺，鹼解離出 OH⁻。</div>
+                <div class="bg-slate-800 p-4 rounded border-l-4 border-blue-500 text-sm">酸鹼皆為電解質，溶於水皆放熱。</div>
+                <div class="bg-slate-800 p-4 rounded border-l-4 border-blue-500 text-sm">酸遇金屬生 H₂，遇碳酸鹽生 CO₂。</div>
+                <div class="bg-slate-800 p-4 rounded border-l-4 border-blue-500 text-sm">鹼可溶解油脂，石蕊由紅變藍。</div>
+            </div>
+            <div class="mt-16">
+                <button onclick="goToSlide(0)" class="nav-btn bg-slate-200 !text-slate-700">重新複習</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 控制按鈕 -->
+    <div class="nav-bar-bottom fixed bottom-6 left-1/2 -translate-x-1/2 flex flex-row gap-4 z-50 items-center">
+        <button id="prevBtn" class="nav-btn whitespace-nowrap" onclick="move(-1)">前一頁</button>
+        <div class="flex items-center px-4 font-bold text-slate-500 whitespace-nowrap" id="pageNum">1 / 7</div>
+        <button id="nextBtn" class="nav-btn whitespace-nowrap" onclick="move(1)">下一頁</button>
+    </div>
+
+    <script>
+        let current = 0;
+        const total = 7;
+
+        function update() {
+            document.querySelectorAll('.slide').forEach((s, i) => {
+                s.classList.toggle('active', i === current);
+            });
+            document.getElementById('prevBtn').disabled = current === 0;
+            document.getElementById('nextBtn').disabled = current === total - 1;
+            document.getElementById('pageNum').innerText = `${current + 1} / ${total}`;
+        }
+
+        function move(n) {
+            current = Math.max(0, Math.min(total - 1, current + n));
+            update();
+        }
+
+        function startAcidAnim() {
+            document.getElementById('acid-metal').classList.add('reacting');
+            document.getElementById('acid-carbonate').classList.add('reacting');
+        }
+
+        function resetAcidAnim() {
+            document.getElementById('acid-metal').classList.remove('reacting');
+            document.getElementById('acid-carbonate').classList.remove('reacting');
+        }
+
+        function startBaseAnim() {
+            document.getElementById('base-beaker').classList.add('reacting');
+        }
+
+        function resetBaseAnim() {
+            document.getElementById('base-beaker').classList.remove('reacting');
+        }
+
+        function goToSlide(n) {
+            current = n;
+            resetAcidAnim();
+            resetBaseAnim();
+            update();
+        }
+
+        update();
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') move(1);
+            if (e.key === 'ArrowLeft') move(-1);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3-1 原子、離子與電解質</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #0f172a;
+            color: #f1f5f9;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .slide {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            padding: 40px 80px;
+            box-sizing: border-box;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.5s ease-out forwards;
+            padding-bottom: 80px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* ===== 原子模型 ===== */
+        .atom-container {
+            position: relative;
+            width: 260px; height: 260px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .nucleus {
+            width: 70px; height: 70px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex; flex-wrap: wrap; align-content: center; justify-content: center;
+            gap: 4px; z-index: 20;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        .proton { width: 16px; height: 16px; background: #ef4444; border-radius: 50%; box-shadow: 0 0 5px #ef4444; }
+        .neutron { width: 16px; height: 16px; background: #64748b; border-radius: 50%; }
+        .orbit {
+            position: absolute;
+            border: 1px dashed rgba(148,163,184,0.5);
+            border-radius: 50%;
+            animation: rotate 10s linear infinite;
+        }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .electron {
+            position: absolute; width: 12px; height: 12px;
+            background: #3b82f6; border-radius: 50%;
+            top: -6px; left: calc(50% - 6px);
+            box-shadow: 0 0 10px #3b82f6;
+        }
+
+        .formula-box {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: #22d3ee;
+            font-weight: bold;
+        }
+
+        /* ===== 資訊卡片 ===== */
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        /* ===== 導覽按鈕 ===== */
+        .nav-btn {
+            background: #334155;
+            color: #f1f5f9;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid #475569;
+        }
+        .nav-btn:hover:not(:disabled) { background: #3b82f6; border-color: #60a5fa; }
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* ===== 導電實驗裝置 ===== */
+        .lab-stage {
+            position: relative;
+            width: 700px; height: 400px;
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .circuit-svg {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 10; pointer-events: none;
+        }
+        .circuit-wire {
+            fill: none; stroke: #64748b; stroke-width: 3;
+            stroke-linecap: round; stroke-linejoin: round;
+            transition: stroke 0.3s;
+        }
+        .power-on .circuit-wire { stroke: #f87171; }
+        .battery-pack {
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            width: 140px; height: 44px; background: #334155; border-radius: 6px;
+            display: flex; align-items: center; justify-content: space-around;
+            color: white; z-index: 50; border: 1px solid #475569;
+        }
+        .bulb-unit {
+            position: absolute; z-index: 50;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .bulb-glass {
+            width: 40px; height: 40px; background: #475569; border-radius: 50%;
+            transition: all 0.3s; border: 2px solid #64748b;
+        }
+        .bulb-base { width: 20px; height: 8px; background: #64748b; border-radius: 0 0 3px 3px; }
+        .power-on .bulb-glass {
+            background: #fde047;
+            box-shadow: 0 0 25px 8px rgba(253, 224, 71, 0.45);
+            border-color: #eab308;
+        }
+        .bulb-label { font-size: 9px; font-weight: bold; color: #64748b; margin-top: 2px; }
+        .beaker-wrap {
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: 240px; height: 180px;
+        }
+        .beaker-body {
+            width: 100%; height: 100%;
+            border: 3px solid #94a3b8; border-top: none;
+            border-radius: 0 0 18px 18px;
+            background: rgba(255, 255, 255, 0.03);
+            position: relative; z-index: 20; overflow: hidden;
+        }
+        .liquid-fill {
+            position: absolute; bottom: 0; width: 100%; height: 70%;
+            background: linear-gradient(180deg, rgba(56,189,248,0.06) 0%, rgba(56,189,248,0.18) 100%);
+            border-radius: 0 0 15px 15px;
+            transition: box-shadow 0.5s;
+        }
+        .power-on .liquid-fill {
+            box-shadow: inset 0 0 30px rgba(56,189,248,0.15);
+        }
+        .liquid-surface {
+            position: absolute; top: 0; width: 100%; height: 3px;
+            background: rgba(56, 189, 248, 0.4);
+            animation: surfaceWave 4s ease-in-out infinite;
+        }
+        @keyframes surfaceWave {
+            0%, 100% { transform: scaleX(1); opacity: 0.4; }
+            50% { transform: scaleX(1.02); opacity: 0.6; }
+        }
+        .rod {
+            position: absolute; width: 12px; height: 145px;
+            background: #475569; top: -20px; z-index: 30; border-radius: 2px;
+        }
+        .rod-p { left: 55px; border-top: 4px solid #ef4444; }
+        .rod-n { right: 55px; border-top: 4px solid #3b82f6; }
+        .bubble-zone {
+            position: absolute; width: 18px; height: 80px; z-index: 35;
+        }
+        .bubble-zone-p { left: 54px; bottom: 6px; }
+        .bubble-zone-n { right: 54px; bottom: 6px; }
+        .bubble {
+            position: absolute; background: rgba(255,255,255,0.65);
+            border-radius: 50%; opacity: 0;
+        }
+        .power-on .bubble { animation: rise 2.2s infinite ease-out; }
+        @keyframes rise {
+            0%   { transform: translateY(0) scale(0.5); opacity: 0; }
+            15%  { opacity: 0.8; }
+            60%  { opacity: 0.4; }
+            100% { transform: translateY(-75px) scale(1.1); opacity: 0; }
+        }
+        .ion {
+            position: absolute; width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 10px; font-weight: 900;
+            z-index: 35;
+            animation: ionFloat 3s ease-in-out infinite;
+            transition: none;
+        }
+        .ion:nth-child(odd) { animation-delay: -1.5s; }
+        @keyframes ionFloat {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(3px, -4px); }
+            75% { transform: translate(-3px, 3px); }
+        }
+        .ion-p { background: radial-gradient(circle at 35% 35%, #f87171, #dc2626); box-shadow: 0 0 6px rgba(239,68,68,0.4); }
+        .ion-n { background: radial-gradient(circle at 35% 35%, #60a5fa, #2563eb); box-shadow: 0 0 6px rgba(59,130,246,0.4); }
+        .power-on .ion-p { animation: ionMoveRight 2.5s ease forwards; }
+        .power-on .ion-n { animation: ionMoveLeft 2.5s ease forwards; }
+        @keyframes ionMoveRight {
+            0% { transform: translate(0, 0); }
+            100% { transform: translateX(70px); }
+        }
+        @keyframes ionMoveLeft {
+            0% { transform: translate(0, 0); }
+            100% { transform: translateX(-70px); }
+        }
+        /* ===== 手機響應式 ===== */
+        @media (max-width: 768px) {
+            body { overflow: auto; height: auto; }
+            .slide { padding: 20px 16px; height: auto; min-height: 100vh; }
+            .slide.active { padding-bottom: 100px; overflow-y: auto; }
+            .nav-btn { padding: 8px 16px; font-size: 0.85rem; }
+            .nav-bar-bottom { bottom: 8px; gap: 8px; }
+            .nav-bar-bottom #pageNum { padding: 0 8px; font-size: 0.8rem; }
+            .atom-container { width: 180px; height: 180px; }
+            .nucleus { width: 50px; height: 50px; }
+            .proton, .neutron { width: 12px; height: 12px; }
+            .electron { width: 10px; height: 10px; top: -5px; left: calc(50% - 5px); }
+            .formula-box { font-size: 0.9rem; padding: 8px 14px; }
+            .lab-stage-wrap {
+                width: 100%;
+                height: 200px;
+                display: flex;
+                justify-content: center;
+                overflow: hidden;
+            }
+            .lab-stage {
+                width: 700px; height: 400px;
+                transform: scale(0.48);
+                transform-origin: top center;
+                flex-shrink: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========== Slide 1: 封面 ========== -->
+    <div class="slide active" id="s0">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-7xl font-black text-white mb-6">3-1 原子、離子與電解質</h1>
+            <div class="w-32 h-1.5 bg-blue-500 mx-auto mb-8"></div>
+            <p class="text-2xl text-slate-400 font-medium tracking-widest">從微觀粒子到導電現象</p>
+        </div>
+    </div>
+
+    <!-- ========== Slide 2: 原子的基本粒子 (from 3-1n) ========== -->
+    <div class="slide" id="s1">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-blue-500 pl-4 md:pl-6">一、原子的基本粒子</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 w-full max-w-6xl items-center">
+            <div class="flex justify-center">
+                <div class="atom-container">
+                    <div class="orbit" style="width: min(240px, 85%); height: min(240px, 85%);">
+                        <div class="electron"></div>
+                    </div>
+                    <div class="orbit" style="width: min(160px, 60%); height: min(160px, 60%); animation-duration: 6s; animation-direction: reverse;">
+                        <div class="electron"></div>
+                    </div>
+                    <div class="nucleus">
+                        <div class="proton"></div>
+                        <div class="neutron"></div>
+                        <div class="proton"></div>
+                        <div class="neutron"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="space-y-5">
+                <div class="glass-card border-l-4 border-red-500">
+                    <h3 class="text-lg font-bold text-red-400 mb-1">質子 (Proton)</h3>
+                    <p class="text-sm text-slate-300">帶正電 (+1)，位於原子核。數量即為<strong class="text-white">「原子序」</strong>，決定元素種類。</p>
+                </div>
+                <div class="glass-card border-l-4 border-slate-500">
+                    <h3 class="text-lg font-bold text-slate-400 mb-1">中子 (Neutron)</h3>
+                    <p class="text-sm text-slate-300">不帶電 (0)，位於原子核。與質子共同決定<strong class="text-white">「質量數」</strong>。</p>
+                </div>
+                <div class="glass-card border-l-4 border-blue-500">
+                    <h3 class="text-lg font-bold text-blue-400 mb-1">電子 (Electron)</h3>
+                    <p class="text-sm text-slate-300">帶負電 (-1)，在核外運動。質量極小，負責<strong class="text-white">化學性質與電荷</strong>。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== Slide 3: 核心數量公式 (from 3-1n) ========== -->
+    <div class="slide" id="s2">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-blue-500 pl-6">二、原子序與質量數</h2>
+        <div class="w-full max-w-4xl space-y-8">
+            <div class="glass-card text-center">
+                <h3 class="text-xl font-bold text-cyan-400 mb-4">元素的身分：原子序</h3>
+                <div class="formula-box text-2xl inline-block">原子序 = 質子數</div>
+                <p class="mt-3 text-slate-400 text-sm">※ 只要質子數不變，元素種類就不會改變。</p>
+            </div>
+            <div class="grid grid-cols-2 gap-6">
+                <div class="glass-card">
+                    <h4 class="font-bold text-white mb-3">質量的組成</h4>
+                    <p class="formula-box text-base">質量數 = 質子數 + 中子數</p>
+                    <p class="mt-3 text-xs text-slate-500">中子數 = 質量數 - 原子序</p>
+                </div>
+                <div class="glass-card">
+                    <h4 class="font-bold text-white mb-3">電中性狀態</h4>
+                    <p class="formula-box text-base">質子數 (+) = 電子數 (-)</p>
+                    <p class="mt-3 text-xs text-slate-500">兩者數量相等時，原子整體不帶電。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== Slide 4: 離子的形成 (from 3-1n) ========== -->
+    <div class="slide" id="s3">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-cyan-500 pl-6">三、離子的形成</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 w-full max-w-6xl items-center">
+            <div class="space-y-5">
+                <div class="glass-card">
+                    <h3 class="text-xl font-bold text-white mb-3">定義：電子得失</h3>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        原子為了達成穩定，會<strong>失去</strong>或<strong>得到</strong>電子。因電荷不平衡而帶電的粒子稱為「離子」。
+                    </p>
+                </div>
+                <div class="bg-red-900/20 p-5 rounded-xl border border-red-500/30">
+                    <h4 class="font-bold text-red-400 mb-2">極重要觀念</h4>
+                    <ul class="text-sm text-slate-400 space-y-1">
+                        <li>● 離子化時，原子核的<strong class="text-white">質子數絕對不變</strong></li>
+                        <li>● 質子不變 → 元素種類不變</li>
+                        <li>● 僅涉及「電子數量」的變化</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="flex flex-col items-center">
+                <div class="atom-container" id="ion-demo">
+                    <div class="orbit" style="width: 200px; height: 200px;">
+                        <div class="electron" id="electron-1"></div>
+                    </div>
+                    <div class="orbit" style="width: 200px; height: 200px; animation-duration: 8s; animation-direction: reverse;">
+                        <div class="electron" id="electron-2" style="opacity:0;"></div>
+                    </div>
+                    <div class="nucleus">
+                        <div class="proton"></div>
+                    </div>
+                </div>
+                <div class="mt-6 flex gap-3">
+                    <button class="nav-btn text-xs" onclick="ionize('lose')">失去電子 (正離子)</button>
+                    <button class="nav-btn text-xs" onclick="ionize('gain')">得到電子 (負離子)</button>
+                    <button class="nav-btn text-xs bg-slate-600" onclick="ionize('reset')">重置</button>
+                </div>
+                <p id="ion-status" class="mt-3 font-bold text-cyan-400 text-sm">當前狀態：電中性原子</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== Slide 5: 正負離子對照表 (from 3-1n) ========== -->
+    <div class="slide" id="s4">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-cyan-500 pl-6">四、正負離子對照表</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl">
+            <div class="glass-card border-t-4 border-red-500">
+                <h3 class="text-2xl font-bold text-red-400 mb-4">正離子 (陽離子)</h3>
+                <p class="text-slate-300 mb-4">方式：原子<strong>失去</strong>電子</p>
+                <div class="formula-box w-full text-center">質子數 > 電子數</div>
+                <p class="mt-4 text-sm text-slate-400 italic">例：Na⁺、Mg²⁺、H⁺</p>
+            </div>
+            <div class="glass-card border-t-4 border-blue-500">
+                <h3 class="text-2xl font-bold text-blue-400 mb-4">負離子 (陰離子)</h3>
+                <p class="text-slate-300 mb-4">方式：原子<strong>得到</strong>電子</p>
+                <div class="formula-box w-full text-center">電子數 > 質子數</div>
+                <p class="mt-4 text-sm text-slate-400 italic">例：Cl⁻、O²⁻、OH⁻</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== Slide 6: 電解質的定義 (from 3-1) ========== -->
+    <div class="slide" id="s5">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-blue-500 pl-6">五、電解質的定義</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl">
+            <div class="glass-card border-t-4 border-green-500">
+                <h3 class="text-xl font-bold text-green-400 mb-4">電解質 (Electrolyte)</h3>
+                <p class="text-slate-300 mb-4">溶於水後能<strong class="text-white">解離</strong>並導電的<strong class="text-white">化合物</strong>。</p>
+                <div class="space-y-2 text-sm">
+                    <p class="p-2 bg-slate-900/50 rounded text-slate-300">酸類：HCl, CH₃COOH</p>
+                    <p class="p-2 bg-slate-900/50 rounded text-slate-300">鹼類：NaOH, Ca(OH)₂</p>
+                    <p class="p-2 bg-slate-900/50 rounded text-slate-300">鹽類：NaCl, CuSO₄</p>
+                </div>
+            </div>
+            <div class="glass-card border-t-4 border-slate-600">
+                <h3 class="text-xl font-bold text-slate-400 mb-4">非電解質</h3>
+                <p class="text-slate-300 mb-4">溶於水後不能導電的化合物。</p>
+                <div class="space-y-2 text-sm">
+                    <p class="p-2 bg-slate-900/50 rounded text-slate-300">糖類（如：葡萄糖）</p>
+                    <p class="p-2 bg-slate-900/50 rounded text-slate-300">酒精（乙醇）</p>
+                    <p class="p-2 bg-slate-900/50 rounded text-slate-300">蒸餾水（極難導電）</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== Slide 7: 導電實驗裝置圖 (from 3-1) ========== -->
+    <div class="slide" id="s6">
+        <h2 class="text-2xl md:text-4xl font-bold mb-6 self-start border-l-8 border-blue-500 pl-6">六、導電實驗裝置圖</h2>
+        <div class="flex flex-col md:flex-row gap-4 md:gap-8 items-center md:items-start w-full">
+            <div class="lab-stage-wrap">
+            <div class="lab-stage" id="lab">
+                <svg class="circuit-svg" viewBox="0 0 700 400">
+                    <polyline class="circuit-wire" points="310,64 310,180" />
+                    <polyline class="circuit-wire" points="390,64 390,85 560,85 560,100" />
+                    <polyline class="circuit-wire" points="560,148 560,180 409,180" />
+                </svg>
+                <div class="battery-pack">
+                    <span class="text-red-400 font-black text-2xl">+</span>
+                    <span class="text-[10px] font-bold">直流電源</span>
+                    <span class="text-blue-400 font-black text-2xl">-</span>
+                </div>
+                <div class="bulb-unit" style="left: 540px; top: 100px;">
+                    <div class="bulb-glass"></div>
+                    <div class="bulb-base"></div>
+                    <span class="bulb-label">燈泡</span>
+                </div>
+                <div class="beaker-wrap">
+                    <div class="beaker-body">
+                        <div class="liquid-fill"><div class="liquid-surface"></div></div>
+                        <div class="rod rod-p">
+                            <span class="absolute -top-7 left-1/2 -translate-x-1/2 text-[10px] font-black text-red-400">正極</span>
+                        </div>
+                        <div class="rod rod-n">
+                            <span class="absolute -top-7 left-1/2 -translate-x-1/2 text-[10px] font-black text-blue-400">負極</span>
+                        </div>
+                        <div class="bubble-zone bubble-zone-p">
+                            <div class="bubble" style="width:5px; height:5px; left:1px; bottom:0; animation-delay:0s;"></div>
+                            <div class="bubble" style="width:4px; height:4px; left:9px; bottom:8px; animation-delay:0.5s;"></div>
+                            <div class="bubble" style="width:6px; height:6px; left:4px; bottom:15px; animation-delay:1.0s;"></div>
+                            <div class="bubble" style="width:3px; height:3px; left:11px; bottom:3px; animation-delay:1.5s;"></div>
+                        </div>
+                        <div class="bubble-zone bubble-zone-n">
+                            <div class="bubble" style="width:4px; height:4px; right:1px; bottom:4px; animation-delay:0.3s;"></div>
+                            <div class="bubble" style="width:6px; height:6px; right:7px; bottom:12px; animation-delay:0.7s;"></div>
+                            <div class="bubble" style="width:5px; height:5px; right:3px; bottom:0; animation-delay:1.1s;"></div>
+                            <div class="bubble" style="width:3px; height:3px; right:11px; bottom:20px; animation-delay:1.6s;"></div>
+                        </div>
+                        <div class="ion ion-p" style="bottom:35px; left:80px;">Na⁺</div>
+                        <div class="ion ion-n" style="bottom:55px; right:80px;">Cl⁻</div>
+                        <div class="ion ion-p" style="bottom:70px; left:105px;">H⁺</div>
+                        <div class="ion ion-n" style="bottom:25px; right:105px;">OH⁻</div>
+                    </div>
+                </div>
+                <span class="absolute text-[9px] text-slate-500 font-bold" style="left:230px; top:185px;">溶液 (NaCl 水溶液)</span>
+            </div>
+            </div>
+            <div class="flex flex-col gap-4 w-56 pt-2">
+                <button class="nav-btn text-base py-3 px-6" id="pBtn" onclick="togglePower()">接通電源</button>
+                <div class="glass-card text-sm text-slate-400 space-y-2">
+                    <p>● 離子在溶液中定向移動形成電流</p>
+                    <p>● 電極產生氣泡代表化學變化</p>
+                    <p>● 燈泡亮起 = 溶液可導電</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== Slide 8: 電離說核心觀念 (from 3-1) ========== -->
+    <div class="slide" id="s7">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-blue-500 pl-6">七、電離說核心觀念</h2>
+        <div class="w-full max-w-4xl space-y-6">
+            <div class="glass-card text-center">
+                <h3 class="text-xl font-bold mb-4 text-blue-400">解離反應式</h3>
+                <div class="flex justify-center gap-12 text-2xl font-mono text-cyan-300">
+                    <p>NaCl → Na⁺ + Cl⁻</p>
+                    <p>NaOH → Na⁺ + OH⁻</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-6">
+                <div class="glass-card">
+                    <h4 class="font-bold text-slate-200 mb-2">導電原因</h4>
+                    <p class="text-sm text-slate-400">離子在水中可自由移動，形成電流。注意：金屬導電是靠「電子」，電解質是靠「離子」。</p>
+                </div>
+                <div class="glass-card">
+                    <h4 class="font-bold text-slate-200 mb-2">電中性原理</h4>
+                    <p class="text-sm text-slate-400">陽離子總電量 = 陰離子總電量。溶液整體不帶電，稱為「電中性」。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== Slide 9: 考試常見陷阱辨析 (from 3-1) ========== -->
+    <div class="slide" id="s8">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-blue-500 pl-6">八、考試常見陷阱辨析</h2>
+        <div class="w-full max-w-4xl space-y-4">
+            <div class="flex items-start gap-4 p-4 bg-red-900/20 rounded-lg border border-red-900/50">
+                <div class="w-8 h-8 rounded bg-red-500 text-white flex items-center justify-center flex-shrink-0 font-bold">!</div>
+                <div>
+                    <p class="font-bold text-red-400">導電性 ≠ 酸鹼性</p>
+                    <p class="text-sm text-red-300/70">導電性強弱與離子濃度有關；中性溶液（如食鹽水）也可具有優良導電性。</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700">
+                <div class="w-8 h-8 rounded bg-slate-500 text-white flex items-center justify-center flex-shrink-0 font-bold">?</div>
+                <div>
+                    <p class="font-bold text-slate-300">是化合物嗎？</p>
+                    <p class="text-sm text-slate-400">金、銀、銅、石墨可導電但不是電解質，因為它們是「元素」而非化合物。</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-4 p-4 bg-blue-900/20 rounded-lg border border-blue-900/50">
+                <div class="w-8 h-8 rounded bg-blue-500 text-white flex items-center justify-center flex-shrink-0 font-bold">i</div>
+                <div>
+                    <p class="font-bold text-blue-400">清洗細節</p>
+                    <p class="text-sm text-blue-300/70">更換溶液前，必須用「蒸餾水」清洗碳棒，避免殘留離子干擾實驗。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="nav-bar-bottom fixed bottom-6 left-1/2 -translate-x-1/2 flex flex-row gap-4 z-50 items-center">
+        <button id="prevBtn" class="nav-btn whitespace-nowrap" onclick="move(-1)">前一頁</button>
+        <div class="flex items-center px-4 font-bold text-slate-500 whitespace-nowrap" id="pageNum">1 / 9</div>
+        <button id="nextBtn" class="nav-btn whitespace-nowrap" onclick="move(1)">下一頁</button>
+    </div>
+
+    <script>
+        let current = 0;
+        const total = 9;
+
+        function update() {
+            document.querySelectorAll('.slide').forEach((s, i) => {
+                s.classList.toggle('active', i === current);
+            });
+            document.getElementById('prevBtn').disabled = current === 0;
+            document.getElementById('nextBtn').disabled = current === total - 1;
+            document.getElementById('pageNum').innerText = `${current + 1} / ${total}`;
+        }
+
+        function move(n) {
+            current = Math.max(0, Math.min(total - 1, current + n));
+            update();
+        }
+
+        // 導電實驗
+        let power = false;
+        function togglePower() {
+            power = !power;
+            const lab = document.getElementById('lab');
+            const btn = document.getElementById('pBtn');
+            if (power) {
+                lab.classList.add('power-on');
+                btn.innerText = '切斷電源';
+                btn.style.backgroundColor = '#ef4444';
+                btn.style.borderColor = '#ef4444';
+            } else {
+                lab.classList.remove('power-on');
+                btn.innerText = '接通電源';
+                btn.style.backgroundColor = '#334155';
+                btn.style.borderColor = '#475569';
+            }
+        }
+
+        // 離子化模擬
+        function ionize(type) {
+            var e1 = document.getElementById('electron-1');
+            var e2 = document.getElementById('electron-2');
+            var status = document.getElementById('ion-status');
+
+            if (type === 'lose') {
+                // 原本 1 顆電子飛走 → 0 顆，質子 > 電子 → 正離子
+                e1.style.transition = 'all 1s ease-out';
+                e1.style.transform = 'translate(200px, -200px)';
+                e1.style.opacity = '0';
+                e2.style.transition = 'all 0.3s';
+                e2.style.opacity = '0';
+                status.innerText = '狀態：正離子 (1質子 0電子，帶+1電)';
+                status.style.color = '#f87171';
+            } else if (type === 'gain') {
+                // 原本 1 顆 + 新來 1 顆 = 2 顆電子，質子 < 電子 → 負離子
+                e1.style.transition = 'all 0.3s';
+                e1.style.transform = 'none';
+                e1.style.opacity = '1';
+                // 第二顆從外面飛入
+                e2.style.transition = 'none';
+                e2.style.transform = 'translate(200px, -200px)';
+                e2.style.opacity = '0';
+                setTimeout(function() {
+                    e2.style.transition = 'all 1s ease-in';
+                    e2.style.transform = 'translate(0, 0)';
+                    e2.style.opacity = '1';
+                }, 50);
+                status.innerText = '狀態：負離子 (1質子 2電子，帶-1電)';
+                status.style.color = '#60a5fa';
+            } else {
+                // 重置：回到 1 顆電子的電中性狀態
+                e1.style.transition = 'all 0.5s';
+                e1.style.transform = 'none';
+                e1.style.opacity = '1';
+                e2.style.transition = 'all 0.5s';
+                e2.style.opacity = '0';
+                status.innerText = '當前狀態：電中性原子 (1質子 1電子)';
+                status.style.color = '#22d3ee';
+            }
+        }
+
+        update();
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') move(1);
+            if (e.key === 'ArrowLeft') move(-1);
+        });
+    </script>
+</body>
+</html>

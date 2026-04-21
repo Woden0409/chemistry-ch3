@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3-4 酸鹼反應 專業簡報</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #0f172a;
+            color: #f1f5f9;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .slide {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            padding: 40px 80px;
+            box-sizing: border-box;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.5s ease-out forwards;
+            padding-bottom: 80px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* 資訊卡片 */
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        /* 滴定裝置模擬 */
+        .titration-setup {
+            position: relative;
+            width: 300px;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .buret {
+            width: 14px;
+            height: 200px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.1), rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+            border: 2px solid #94a3b8;
+            position: relative;
+            border-radius: 2px 2px 1px 1px;
+        }
+        /* 滴定管刻度 */
+        .buret::after {
+            content: '';
+            position: absolute;
+            top: 10%; right: -6px;
+            width: 4px; height: 80%;
+            background: repeating-linear-gradient(
+                to bottom,
+                #64748b 0px, #64748b 1px,
+                transparent 1px, transparent 10px
+            );
+        }
+
+        .buret-liquid {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 80%;
+            background: linear-gradient(180deg, rgba(239,68,68,0.2), rgba(239,68,68,0.4));
+            transition: height 3s ease;
+        }
+
+        /* 滴定管尖端 */
+        .buret-tip {
+            width: 4px; height: 12px;
+            background: #94a3b8;
+            border-radius: 0 0 2px 2px;
+        }
+
+        .erlenmeyer {
+            width: 120px;
+            height: 100px;
+            margin-top: 40px;
+            position: relative;
+            border-bottom: 4px solid #94a3b8;
+            background: rgba(255, 255, 255, 0.05);
+            clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);
+            overflow: hidden;
+        }
+
+        .flask-liquid {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 40%;
+            background: rgba(236, 72, 153, 0.35); /* 酚酞在鹼性中 = 粉紅色 */
+            transition: background 2.5s ease, height 3s ease;
+        }
+        /* 液面光澤 */
+        .flask-liquid::before {
+            content: '';
+            position: absolute;
+            top: -3px; left: -10%;
+            width: 120%; height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            animation: wave 3s ease-in-out infinite;
+        }
+        @keyframes wave {
+            0%, 100% { transform: translateX(-3%); }
+            50% { transform: translateX(3%); }
+        }
+
+        /* 滴落動畫 — 水滴形 */
+        .drop {
+            position: absolute;
+            width: 5px;
+            height: 8px;
+            background: radial-gradient(ellipse at 50% 30%, rgba(239,68,68,0.8), rgba(239,68,68,0.4));
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            top: 218px;
+            opacity: 0;
+        }
+        .drop:nth-child(2) { animation-delay: 0.5s !important; }
+
+        .titrating .drop {
+            animation: drip 1.2s infinite ease-in;
+        }
+        .titrating .flask-liquid {
+            height: 55%;
+        }
+
+        @keyframes drip {
+            0% { transform: translateY(0) scale(0.8); opacity: 0.9; }
+            100% { transform: translateY(60px); opacity: 0; }
+        }
+
+        /* 溫度計 — 擬真風格 */
+        .thermometer {
+            display: flex;
+            align-items: flex-end;
+            gap: 0;
+            position: relative;
+        }
+        .thermo-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        /* 管柱頂端圓蓋 */
+        .thermo-cap {
+            width: 20px; height: 8px;
+            background: #e2e8f0;
+            border-radius: 10px 10px 0 0;
+            border: 2px solid #94a3b8;
+            border-bottom: none;
+            z-index: 2;
+        }
+        /* 玻璃管 */
+        .thermo-tube {
+            width: 20px; height: 120px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.15) 40%, rgba(255,255,255,0.05) 100%);
+            border: 2px solid #94a3b8;
+            border-top: none; border-bottom: none;
+            position: relative;
+            overflow: hidden;
+            z-index: 2;
+        }
+        /* 內管（紅色水銀柱通道） */
+        .thermo-inner {
+            position: absolute;
+            left: 50%; transform: translateX(-50%);
+            width: 6px; height: 100%;
+            background: rgba(30,41,59,0.6);
+            border-radius: 3px;
+        }
+        .temp-fill {
+            position: absolute;
+            bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 6px;
+            height: 20%;
+            background: linear-gradient(to top, #dc2626, #ef4444);
+            border-radius: 3px 3px 0 0;
+            transition: height 2s ease;
+            z-index: 3;
+        }
+        /* 刻度線 */
+        .thermo-ticks {
+            position: absolute; top: 0; right: -1px;
+            width: 100%; height: 100%;
+        }
+        .thermo-tick {
+            position: absolute; right: 0;
+            height: 1px; background: #94a3b8;
+        }
+        .thermo-tick.major { width: 8px; }
+        .thermo-tick.minor { width: 4px; background: #64748b; }
+        /* 底部水銀球 */
+        .thermo-bulb {
+            width: 24px; height: 24px;
+            background: radial-gradient(circle at 40% 35%, #f87171, #dc2626 60%, #991b1b);
+            border-radius: 50%;
+            border: 2px solid #94a3b8;
+            margin-top: -3px;
+            z-index: 2;
+            box-shadow: inset 0 -2px 4px rgba(0,0,0,0.3);
+        }
+        /* 刻度數字 */
+        .thermo-labels {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 120px;
+            margin-left: 5px;
+            padding: 2px 0;
+        }
+        .thermo-labels span {
+            font-size: 9px;
+            color: #94a3b8;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        /* 中和反應小燒杯 */
+        .mini-beaker {
+            width: 50px; height: 55px;
+            border: 2px solid #94a3b8; border-top: none;
+            border-radius: 0 0 10px 10px;
+            position: relative; overflow: hidden;
+            background: rgba(255,255,255,0.03);
+        }
+        .mini-liquid {
+            position: absolute; bottom: 0; width: 100%;
+            height: 65%;
+        }
+
+        /* pH 指示器 */
+        .ph-track {
+            width: 100%; height: 14px;
+            border-radius: 7px;
+            background: linear-gradient(to right, #ef4444 0%, #f97316 15%, #facc15 30%, #4ade80 45%, #22d3ee 60%, #3b82f6 75%, #8b5cf6 90%, #a855f7 100%);
+            position: relative;
+        }
+        .ph-pointer {
+            position: absolute; top: -6px;
+            width: 3px; height: 26px;
+            background: white;
+            border-radius: 2px;
+            transition: left 2s ease;
+            box-shadow: 0 0 6px rgba(255,255,255,0.6);
+        }
+
+        /* 導覽按鈕 */
+        .nav-btn {
+            background: #334155;
+            color: #f1f5f9;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid #475569;
+        }
+        .nav-btn:hover:not(:disabled) { background: #3b82f6; border-color: #60a5fa; }
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .formula-box {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: #22d3ee;
+            font-weight: bold;
+        }
+        @media (max-width: 768px) {
+            body { overflow: auto; height: auto; }
+            .slide { padding: 20px 16px; height: auto; min-height: 100vh; }
+            .slide.active { padding-bottom: 100px; overflow-y: auto; }
+            .nav-btn { padding: 8px 16px; font-size: 0.85rem; }
+            .nav-bar-bottom { bottom: 8px; gap: 8px; }
+            .nav-bar-bottom #pageNum { padding: 0 8px; font-size: 0.8rem; }
+            .formula-box { font-size: 0.9rem; padding: 8px 14px; }
+            .titration-setup { height: 280px; transform: scale(0.7); transform-origin: top center; }
+            .glass-card { padding: 16px; }
+            .thermometer { transform: scale(0.85); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Slide 1: 封面 -->
+    <div class="slide active" id="s0">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-7xl font-black text-white mb-6">3-4 酸鹼反應</h1>
+            <div class="w-32 h-1.5 bg-cyan-500 mx-auto mb-8"></div>
+            <p class="text-2xl text-slate-400 font-medium tracking-widest">中和反應、滴定實驗與生活應用</p>
+        </div>
+    </div>
+
+    <!-- Slide 2: 酸鹼中和定義 -->
+    <div class="slide" id="s1">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-cyan-500 pl-6">一、酸鹼中和的定義</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl">
+            <div class="glass-card">
+                <h3 class="text-2xl font-bold text-cyan-400 mb-6 underline decoration-2 underline-offset-8">定義與本質</h3>
+                <p class="text-slate-300 mb-6">酸產生的 <span class="text-red-400 font-bold">H⁺</span> 與鹼產生的 <span class="text-blue-400 font-bold">OH⁻</span> 結合產生水的過程。</p>
+                <div class="space-y-4 font-mono text-xl">
+                    <p class="bg-slate-900/50 p-4 rounded text-center">H⁺ + OH⁻ → H₂O</p>
+                </div>
+                <div class="mt-8 text-sm text-slate-500">※ 此為所有強酸強鹼反應的離子反應式。</div>
+            </div>
+            <div class="glass-card">
+                <h3 class="text-2xl font-bold text-cyan-400 mb-6 underline decoration-2 underline-offset-8">中和反應式</h3>
+                <p class="text-slate-300 mb-6 text-center text-xl font-bold">酸 + 鹼 → 鹽 + 水</p>
+                <div class="formula-box text-center text-lg mb-4">
+                    HCl + NaOH → NaCl + H₂O
+                </div>
+                <div class="bg-slate-800/50 p-4 rounded-lg mt-4">
+                    <p class="text-sm text-slate-400">旁觀離子：<span class="text-white">Na⁺、Cl⁻</span> (不參與反應，僅留在水中形成鹽類)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: 中和反應的現象 -->
+    <div class="slide" id="s2">
+        <h2 class="text-2xl md:text-4xl font-bold mb-8 self-start border-l-8 border-cyan-500 pl-6">二、中和反應的特徵</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full max-w-6xl">
+
+            <!-- 卡片 1：放熱反應 -->
+            <div class="glass-card flex flex-col items-center">
+                <h4 class="text-red-400 font-bold mb-4 text-lg">1. 放熱反應</h4>
+                <div class="flex items-end gap-5">
+                    <!-- HCl 燒杯 -->
+                    <div class="flex flex-col items-center">
+                        <div class="mini-beaker">
+                            <div class="mini-liquid bg-red-500/40"></div>
+                        </div>
+                        <span class="text-[10px] font-bold text-red-400 mt-1">HCl</span>
+                    </div>
+                    <span class="text-lg font-black text-slate-500 mb-5">+</span>
+                    <!-- NaOH 燒杯 -->
+                    <div class="flex flex-col items-center">
+                        <div class="mini-beaker">
+                            <div class="mini-liquid bg-blue-500/40"></div>
+                        </div>
+                        <span class="text-[10px] font-bold text-blue-400 mt-1">NaOH</span>
+                    </div>
+                    <span class="text-lg font-black text-slate-500 mb-5">→</span>
+                    <!-- 擬真溫度計 -->
+                    <div class="thermometer">
+                        <div class="thermo-body">
+                            <div class="thermo-cap"></div>
+                            <div class="thermo-tube">
+                                <div class="thermo-inner"></div>
+                                <div class="temp-fill" id="temp-fill"></div>
+                                <!-- 刻度線 -->
+                                <div class="thermo-ticks">
+                                    <div class="thermo-tick major" style="top:0%"></div>
+                                    <div class="thermo-tick minor" style="top:10%"></div>
+                                    <div class="thermo-tick minor" style="top:20%"></div>
+                                    <div class="thermo-tick minor" style="top:30%"></div>
+                                    <div class="thermo-tick minor" style="top:40%"></div>
+                                    <div class="thermo-tick major" style="top:50%"></div>
+                                    <div class="thermo-tick minor" style="top:60%"></div>
+                                    <div class="thermo-tick minor" style="top:70%"></div>
+                                    <div class="thermo-tick minor" style="top:80%"></div>
+                                    <div class="thermo-tick minor" style="top:90%"></div>
+                                    <div class="thermo-tick major" style="top:100%"></div>
+                                </div>
+                            </div>
+                            <div class="thermo-bulb"></div>
+                        </div>
+                        <div class="thermo-labels">
+                            <span>100°C</span>
+                            <span>50°C</span>
+                            <span>0°C</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-3 text-xs text-slate-500">混合後溫度上升，中和必定放熱</p>
+                <div class="mt-2 flex gap-2">
+                    <button class="nav-btn text-xs py-1 px-3" onclick="heatUp()">模擬放熱</button>
+                    <button class="nav-btn text-xs py-1 px-3 bg-slate-600" onclick="resetHeat()">重置</button>
+                </div>
+            </div>
+
+            <!-- 卡片 2：產生新物質 -->
+            <div class="glass-card flex flex-col items-center">
+                <h4 class="text-cyan-400 font-bold mb-4 text-lg">2. 產生鹽 + 水</h4>
+                <div class="w-full space-y-3">
+                    <!-- 反應式視覺化 -->
+                    <div class="flex items-center justify-center gap-2 text-sm">
+                        <span class="px-3 py-1.5 bg-red-900/40 border border-red-700/50 rounded font-bold text-red-300">H⁺</span>
+                        <span class="text-slate-500">+</span>
+                        <span class="px-3 py-1.5 bg-blue-900/40 border border-blue-700/50 rounded font-bold text-blue-300">OH⁻</span>
+                        <span class="text-slate-500">→</span>
+                        <span class="px-3 py-1.5 bg-cyan-900/40 border border-cyan-700/50 rounded font-bold text-cyan-300">H₂O</span>
+                    </div>
+                    <div class="flex items-center justify-center gap-2 text-sm">
+                        <span class="px-3 py-1.5 bg-red-900/40 border border-red-700/50 rounded font-bold text-red-300">Cl⁻</span>
+                        <span class="text-slate-500">+</span>
+                        <span class="px-3 py-1.5 bg-blue-900/40 border border-blue-700/50 rounded font-bold text-blue-300">Na⁺</span>
+                        <span class="text-slate-500">→</span>
+                        <span class="px-3 py-1.5 bg-yellow-900/40 border border-yellow-700/50 rounded font-bold text-yellow-300">NaCl</span>
+                    </div>
+                    <!-- 完整式 -->
+                    <div class="mt-2 p-3 bg-slate-900/60 rounded-lg text-center">
+                        <p class="text-xs text-slate-500 mb-1">完整反應式</p>
+                        <p class="font-mono text-sm text-white">HCl + NaOH → NaCl + H₂O</p>
+                    </div>
+                </div>
+                <p class="mt-3 text-xs text-slate-500">旁觀離子 Na⁺、Cl⁻ 組成鹽類</p>
+            </div>
+
+            <!-- 卡片 3：酸鹼性改變 -->
+            <div class="glass-card flex flex-col items-center">
+                <h4 class="text-purple-400 font-bold mb-4 text-lg">3. pH 趨向中性</h4>
+                <!-- pH 色帶 + 指標 -->
+                <div class="w-full px-2 mb-2">
+                    <div class="flex justify-between text-[10px] text-slate-500 font-bold mb-1">
+                        <span>0</span><span>3</span><span>7</span><span>11</span><span>14</span>
+                    </div>
+                    <div class="ph-track">
+                        <div class="ph-pointer" id="ph-pointer" style="left: 7%;"></div>
+                    </div>
+                    <div class="flex justify-between text-[10px] mt-1">
+                        <span class="text-red-400 font-bold">← 強酸</span>
+                        <span class="text-green-400 font-bold">中性</span>
+                        <span class="text-blue-400 font-bold">強鹼 →</span>
+                    </div>
+                </div>
+                <!-- 兩個模擬按鈕 -->
+                <div class="w-full mt-3 space-y-2">
+                    <button class="w-full flex items-center gap-2 p-2 bg-red-900/20 rounded text-xs cursor-pointer border border-red-900/30 hover:border-red-500/50 transition" onclick="animatePH('acid')">
+                        <div class="w-3 h-3 rounded-full bg-red-500 flex-shrink-0"></div>
+                        <span class="text-slate-300">模擬：<strong class="text-red-400">酸</strong>中加入鹼 → pH 升高趨向 7</span>
+                    </button>
+                    <button class="w-full flex items-center gap-2 p-2 bg-blue-900/20 rounded text-xs cursor-pointer border border-blue-900/30 hover:border-blue-500/50 transition" onclick="animatePH('base')">
+                        <div class="w-3 h-3 rounded-full bg-blue-500 flex-shrink-0"></div>
+                        <span class="text-slate-300">模擬：<strong class="text-blue-400">鹼</strong>中加入酸 → pH 降低趨向 7</span>
+                    </button>
+                </div>
+                <div class="mt-2">
+                    <button class="nav-btn text-xs py-1 px-3 bg-slate-600" onclick="resetPH()">重置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: 完全中和的本質 (計算) -->
+    <div class="slide" id="s3">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-cyan-500 pl-6">三、完全中和的計算邏輯</h2>
+        <div class="w-full max-w-4xl space-y-10">
+            <div class="glass-card text-center">
+                <h3 class="text-3xl font-black text-cyan-300 mb-6">H⁺ 莫耳數 = OH⁻ 莫耳數</h3>
+                <p class="text-slate-400 mb-8">當溶液完全中和時，酸提供的氫離子總數必等於鹼提供的氫氧根離子總數。</p>
+                <div class="formula-box text-2xl inline-block">
+                    [H⁺] × V<sub>酸</sub> = [OH⁻] × V<sub>鹼</sub>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-6">
+                <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                    <h4 class="font-bold text-cyan-400 mb-2">核心觀念</h4>
+                    <p class="text-sm text-slate-400 leading-relaxed">這不是指「酸的體積 = 鹼的體積」，而是其「所含離子的數量」相等。</p>
+                </div>
+                <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                    <h4 class="font-bold text-yellow-400 mb-2">易錯點</h4>
+                    <p class="text-sm text-slate-400 leading-relaxed">計算時需考慮酸鹼的元數 (例如 H₂SO₄ 提供 2 個 H⁺)。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: 酸鹼滴定實驗 -->
+    <div class="slide" id="s4">
+        <h2 class="text-2xl md:text-4xl font-bold mb-8 self-start border-l-8 border-cyan-500 pl-6">四、酸鹼滴定實驗 (Titration)</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 w-full max-w-6xl items-center">
+            <div class="flex flex-col items-center">
+                <div class="titration-setup" id="titrator">
+                    <p class="text-xs font-bold text-red-400 mb-1">滴定管：HCl (已知濃度)</p>
+                    <div class="buret"><div class="buret-liquid" id="buret-liquid"></div></div>
+                    <div class="buret-tip"></div>
+                    <div class="drop"></div>
+                    <div class="drop"></div>
+                    <div class="erlenmeyer">
+                        <div class="flask-liquid" id="flask-liquid"></div>
+                    </div>
+                    <p class="text-xs font-bold text-purple-400 mt-1">錐形瓶：NaOH + 酚酞</p>
+                </div>
+                <!-- 動態狀態標示 -->
+                <div id="titration-status" class="mt-3 p-2 rounded-lg text-center text-sm font-bold transition-all duration-500" style="background:rgba(236,72,153,0.15); color:#ec4899;">
+                    <span id="status-dot" class="inline-block w-3 h-3 rounded-full mr-2" style="background:#ec4899;"></span>
+                    <span id="status-text">鹼性 — 酚酞呈粉紅色</span>
+                </div>
+                <div class="mt-3 flex gap-4">
+                    <button class="nav-btn text-xs" onclick="startTitration()">開始滴定</button>
+                    <button class="nav-btn text-xs bg-slate-600" onclick="resetTitration()">重置</button>
+                </div>
+            </div>
+            <div class="space-y-6">
+                <div class="glass-card">
+                    <h4 class="font-bold text-cyan-300 mb-2">滴定過程觀察：</h4>
+                    <ul class="text-sm space-y-3 text-slate-400">
+                        <li>● 滴定管內裝已知濃度的酸(或鹼)。</li>
+                        <li>● 錐形瓶內裝待測濃度的液體 + 指示劑。</li>
+                        <li>● <strong class="text-white">指示劑顏色改變</strong> 即到達中和點。</li>
+                    </ul>
+                </div>
+                <div class="glass-card bg-purple-900/20">
+                    <h4 class="font-bold text-purple-300 mb-2">pH 變化趨勢：</h4>
+                    <p class="text-sm text-slate-400">當滴定接近中和點時，pH 值會發生劇烈的跳躍變化。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: 生活中的應用 -->
+    <div class="slide" id="s5">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-cyan-500 pl-6">五、酸鹼中和的應用場景</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 w-full max-w-6xl">
+            <div class="glass-card">
+                <h4 class="font-bold text-green-400 mb-4">農業與環保</h4>
+                <p class="text-sm text-slate-400 leading-relaxed">酸性土壤可加入熟石灰中和；工業酸性廢水需中和處理後排放。</p>
+            </div>
+            <div class="glass-card">
+                <h4 class="font-bold text-yellow-400 mb-4">醫療衛生</h4>
+                <p class="text-sm text-slate-400 leading-relaxed">胃酸過多(強酸)服用制酸劑(弱鹼)中和，以緩解不適感。</p>
+            </div>
+            <div class="glass-card">
+                <h4 class="font-bold text-orange-400 mb-4">昆蟲叮咬</h4>
+                <p class="text-sm text-slate-400 leading-relaxed">蜂螫為酸性分泌物，可用弱鹼性物質中和；蚊蟲叮咬為鹼性，可用弱酸處理。</p>
+            </div>
+        </div>
+        <div class="mt-12 bg-slate-800/80 p-6 rounded-2xl border border-slate-700 w-full max-w-4xl text-center">
+            <p class="text-lg font-bold text-cyan-300">中和應用核心：以適度的弱酸/弱鹼處理強性環境。</p>
+        </div>
+    </div>
+
+    <!-- Slide 7: 鹽類性質 (延伸) -->
+    <div class="slide" id="s6">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-cyan-500 pl-6">六、鹽類與碳酸鹽反應</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl">
+            <div class="glass-card">
+                <h4 class="font-bold text-cyan-400 mb-4 text-xl">鹽類的生成</h4>
+                <p class="text-sm text-slate-400 mb-6">鹼中的陽離子 + 酸中的陰離子 = 鹽類。</p>
+                <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                    <div class="p-2 bg-slate-900 rounded">NaCl<br>(中性)</div>
+                    <div class="p-2 bg-slate-900 rounded">Na₂CO₃<br>(鹼性)</div>
+                    <div class="p-2 bg-slate-900 rounded">NH₄Cl<br>(酸性)</div>
+                </div>
+            </div>
+            <div class="glass-card">
+                <h4 class="font-bold text-yellow-400 mb-4 text-xl">碳酸鹽遇酸反應</h4>
+                <p class="text-sm text-slate-400 mb-4">此反應常在 3-3 與 3-4 連結考出：</p>
+                <p class="formula-box text-center text-sm">碳酸鹽 + 酸 → 鹽 + 水 + CO₂↑</p>
+                <p class="mt-4 text-xs text-slate-500 italic text-center">現象：產生二氧化碳氣體（氣泡）</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: 總結與陷阱 -->
+    <div class="slide" id="s7">
+        <div class="text-center">
+            <h2 class="text-3xl md:text-5xl font-black mb-12">3-4 重點總整理</h2>
+            <div class="grid grid-cols-2 gap-6 max-w-4xl mx-auto text-left">
+                <div class="bg-slate-800 p-6 rounded-xl border-l-4 border-cyan-500">
+                    <h4 class="font-bold mb-2">中和核心</h4>
+                    <p class="text-sm text-slate-400">本質是 H⁺ + OH⁻ → H₂O。過程必放熱，溫度計刻度會上升。</p>
+                </div>
+                <div class="bg-slate-800 p-6 rounded-xl border-l-4 border-cyan-500">
+                    <h4 class="font-bold mb-2">滴定關鍵</h4>
+                    <p class="text-sm text-slate-400">利用已知濃度求未知濃度。指示劑變色瞬間代表到達終點。</p>
+                </div>
+                <div class="bg-red-900/10 p-6 rounded-xl border-l-4 border-red-500">
+                    <h4 class="font-bold text-red-400 mb-2">⚠️ 易錯點</h4>
+                    <p class="text-sm text-slate-400">中和不一定剛好 pH=7。鹽類不一定都是中性。記得 H⁺=OH⁻ 計算。</p>
+                </div>
+                <div class="bg-green-900/10 p-6 rounded-xl border-l-4 border-green-500">
+                    <h4 class="font-bold text-green-400 mb-2">必背現象</h4>
+                    <p class="text-sm text-slate-400">活性金屬生 H₂，碳酸鹽生 CO₂。滴定曲線在中和點時 pH 跳躍最大。</p>
+                </div>
+            </div>
+            <div class="mt-12">
+                <button onclick="goToSlide(0)" class="nav-btn bg-slate-200 !text-slate-700">重新複習</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 控制按鈕 -->
+    <div class="nav-bar-bottom fixed bottom-6 left-1/2 -translate-x-1/2 flex flex-row gap-4 z-50 items-center">
+        <button id="prevBtn" class="nav-btn whitespace-nowrap" onclick="move(-1)">前一頁</button>
+        <div class="flex items-center px-4 font-bold text-slate-500 whitespace-nowrap" id="pageNum">1 / 8</div>
+        <button id="nextBtn" class="nav-btn whitespace-nowrap" onclick="move(1)">下一頁</button>
+    </div>
+
+    <script>
+        let current = 0;
+        const total = 8;
+
+        function update() {
+            document.querySelectorAll('.slide').forEach((s, i) => {
+                s.classList.toggle('active', i === current);
+            });
+            document.getElementById('prevBtn').disabled = current === 0;
+            document.getElementById('nextBtn').disabled = current === total - 1;
+            document.getElementById('pageNum').innerText = `${current + 1} / ${total}`;
+        }
+
+        function move(n) {
+            current = Math.max(0, Math.min(total - 1, current + n));
+            update();
+        }
+
+        // 實驗模擬功能
+        function heatUp() {
+            document.getElementById('temp-fill').style.height = '80%';
+        }
+
+        function resetHeat() {
+            document.getElementById('temp-fill').style.height = '20%';
+        }
+
+        function animatePH(type) {
+            var ptr = document.getElementById('ph-pointer');
+            // 先關掉動畫，瞬間移到起點
+            ptr.style.transition = 'none';
+            if (type === 'acid') {
+                ptr.style.left = '7%';   // 起點：強酸
+            } else {
+                ptr.style.left = '90%';  // 起點：強鹼
+            }
+            // 等瀏覽器渲染後，開啟動畫滑到 pH 7
+            requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
+                    ptr.style.transition = 'left 2s ease';
+                    ptr.style.left = '47%';
+                });
+            });
+        }
+
+        function resetPH() {
+            var ptr = document.getElementById('ph-pointer');
+            ptr.style.transition = 'none';
+            ptr.style.left = '7%';
+        }
+
+        function startTitration() {
+            var titrator = document.getElementById('titrator');
+            var flaskLiquid = document.getElementById('flask-liquid');
+            var buretLiquid = document.getElementById('buret-liquid');
+
+            var statusBox = document.getElementById('titration-status');
+            var statusDot = document.getElementById('status-dot');
+            var statusText = document.getElementById('status-text');
+
+            titrator.classList.add('titrating');
+            buretLiquid.style.height = '35%';
+
+            // 階段性變色：粉紅(鹼性+酚酞) → 淡粉 → 無色(中和完成)
+            setTimeout(function() {
+                flaskLiquid.style.background = 'rgba(236, 72, 153, 0.2)';
+                statusBox.style.background = 'rgba(236,72,153,0.1)';
+                statusBox.style.color = '#f9a8d4';
+                statusDot.style.background = '#f9a8d4';
+                statusText.innerText = '接近中和 — 粉紅色漸淡';
+            }, 1500);
+            setTimeout(function() {
+                flaskLiquid.style.background = 'rgba(236, 72, 153, 0.08)';
+                statusBox.style.background = 'rgba(236,72,153,0.05)';
+                statusBox.style.color = '#fce7f3';
+                statusDot.style.background = '#fce7f3';
+                statusText.innerText = '即將到達終點 — 幾乎無色';
+            }, 3000);
+            setTimeout(function() {
+                flaskLiquid.style.background = 'rgba(200, 200, 220, 0.06)';
+                flaskLiquid.style.boxShadow = 'none';
+                statusBox.style.background = 'rgba(148,163,184,0.1)';
+                statusBox.style.color = '#94a3b8';
+                statusDot.style.background = '#94a3b8';
+                statusText.innerText = '完全中和 — 酚酞無色（達終點）';
+            }, 4500);
+        }
+
+        function resetTitration() {
+            var titrator = document.getElementById('titrator');
+            var flaskLiquid = document.getElementById('flask-liquid');
+            var buretLiquid = document.getElementById('buret-liquid');
+            titrator.classList.remove('titrating');
+            flaskLiquid.style.background = 'rgba(236, 72, 153, 0.35)';
+            flaskLiquid.style.boxShadow = 'none';
+            flaskLiquid.style.height = '40%';
+            buretLiquid.style.height = '80%';
+            // 重置狀態標示
+            var statusBox = document.getElementById('titration-status');
+            var statusDot = document.getElementById('status-dot');
+            var statusText = document.getElementById('status-text');
+            statusBox.style.background = 'rgba(236,72,153,0.15)';
+            statusBox.style.color = '#ec4899';
+            statusDot.style.background = '#ec4899';
+            statusText.innerText = '鹼性 — 酚酞呈粉紅色';
+        }
+
+        function goToSlide(n) {
+            current = n;
+            // 重置所有狀態
+            resetHeat();
+            resetPH();
+            resetTitration();
+            update();
+        }
+
+        update();
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') move(1);
+            if (e.key === 'ArrowLeft') move(-1);
+        });
+    </script>
+</body>
+</html>

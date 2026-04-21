@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3-3 酸鹼的強弱與 pH 值</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #0f172a;
+            color: #f1f5f9;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .slide {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            padding: 40px 80px;
+            box-sizing: border-box;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.5s ease-out forwards;
+            padding-bottom: 80px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* 資訊卡片 */
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 100%;
+        }
+
+        .formula-box {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px 25px;
+            border-radius: 8px;
+            display: inline-block;
+            font-weight: bold;
+            color: #22d3ee;
+            font-size: 1.5rem;
+        }
+
+        .nav-btn {
+            background: #334155;
+            color: #f1f5f9;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            border: 1px solid #475569;
+            transition: 0.2s;
+        }
+        .nav-btn:hover:not(:disabled) { background: #3b82f6; border-color: #60a5fa; }
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* pH 色帶 */
+        .ph-bar {
+            height: 40px;
+            border-radius: 20px;
+            background: linear-gradient(to right, #ef4444, #facc15, #4ade80, #60a5fa, #a855f7);
+            position: relative;
+            margin: 20px 0;
+        }
+
+        /* 燒杯示意圖 */
+        .beaker {
+            width: 100px;
+            height: 120px;
+            border: 3px solid #94a3b8;
+            border-top: none;
+            border-radius: 0 0 15px 15px;
+            position: relative;
+            background: rgba(224, 242, 254, 0.05);
+            overflow: hidden;
+        }
+        .liquid {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: rgba(56, 189, 248, 0.5);
+            transition: height 0.5s ease;
+        }
+        @media (max-width: 768px) {
+            body { overflow: auto; height: auto; }
+            .slide { padding: 20px 16px; height: auto; min-height: 100vh; }
+            .slide.active { padding-bottom: 100px; overflow-y: auto; }
+            .nav-btn { padding: 8px 16px; font-size: 0.85rem; }
+            .nav-bar-bottom { bottom: 8px; gap: 8px; }
+            .nav-bar-bottom #pageNum { padding: 0 8px; font-size: 0.8rem; }
+            .formula-box { font-size: 1rem; padding: 10px 15px; }
+            .beaker { width: 70px; height: 90px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Slide 1: 標題頁 -->
+    <div class="slide active" id="s0">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-7xl font-black text-white mb-6">3-3 酸鹼強弱與 pH 值</h1>
+            <div class="w-32 h-1.5 bg-blue-500 mx-auto mb-8"></div>
+            <p class="text-2xl text-slate-400 font-medium tracking-widest">掌握莫耳濃度與 pH 的對數關係</p>
+        </div>
+    </div>
+
+    <!-- Slide 2: 體積莫耳濃度 -->
+    <div class="slide" id="s1">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-blue-500 pl-6">一、體積莫耳濃度 (M)</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-5xl">
+            <div class="space-y-6">
+                <div class="glass-card">
+                    <h3 class="font-bold text-lg mb-2 text-blue-400">定義</h3>
+                    <p class="text-slate-300">每 1 公升溶液中所含溶質的莫耳數。</p>
+                </div>
+                <div class="glass-card">
+                    <h3 class="font-bold text-lg mb-2 text-blue-400">表示方式</h3>
+                    <p class="text-slate-300">常用 <span class="font-black text-white">[ ]</span> 中括號表示。例：[H⁺] 代表氫離子濃度。</p>
+                </div>
+                <div class="formula-box w-full text-center">
+                    M = n / V <span class="text-sm text-slate-500 ml-4">(mol/L)</span>
+                </div>
+            </div>
+            <div class="glass-card bg-slate-800/50">
+                <h4 class="font-bold mb-4 text-slate-200">計算範例：</h4>
+                <p class="text-slate-300">將 1 mol 食鹽配成 2 L 溶液：</p>
+                <div class="mt-4 p-4 bg-slate-900/50 border border-slate-700 rounded text-center font-bold text-xl text-cyan-300">
+                    [NaCl] = 1 / 2 = 0.5 M
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: 互動計算工具 -->
+    <div class="slide" id="s2">
+        <h2 class="text-2xl md:text-4xl font-bold mb-6 self-start border-l-8 border-blue-500 pl-6">二、公式互動計算器</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full max-w-6xl">
+
+            <!-- 左：公式三角形 -->
+            <div class="glass-card">
+                <h3 class="font-bold text-cyan-400 mb-4 text-center">公式三角形 — 點擊要求的量</h3>
+
+                <!-- 三角形 1: 質量 / 莫耳數 / 分子量 -->
+                <p class="text-xs text-slate-500 text-center mb-2">質量 ÷ 莫耳數 ÷ 分子量</p>
+                <div class="flex justify-center mb-4">
+                    <svg width="220" height="140" viewBox="0 0 220 140">
+                        <!-- 三角形外框 -->
+                        <line x1="110" y1="5" x2="10" y2="135" stroke="#475569" stroke-width="2"/>
+                        <line x1="110" y1="5" x2="210" y2="135" stroke="#475569" stroke-width="2"/>
+                        <line x1="10" y1="135" x2="210" y2="135" stroke="#475569" stroke-width="2"/>
+                        <line x1="10" y1="70" x2="210" y2="70" stroke="#475569" stroke-width="1" stroke-dasharray="4"/>
+                        <!-- 可點擊的區域 -->
+                        <g class="cursor-pointer" onclick="showTriFormula('mass')">
+                            <circle cx="110" cy="38" r="28" fill="rgba(239,68,68,0.15)" stroke="#ef4444" stroke-width="2"/>
+                            <text x="110" y="35" text-anchor="middle" fill="#f87171" font-size="11" font-weight="bold">m</text>
+                            <text x="110" y="50" text-anchor="middle" fill="#f8717188" font-size="9">質量(g)</text>
+                        </g>
+                        <g class="cursor-pointer" onclick="showTriFormula('mole')">
+                            <circle cx="60" cy="105" r="28" fill="rgba(59,130,246,0.15)" stroke="#3b82f6" stroke-width="2"/>
+                            <text x="60" y="102" text-anchor="middle" fill="#60a5fa" font-size="11" font-weight="bold">n</text>
+                            <text x="60" y="117" text-anchor="middle" fill="#60a5fa88" font-size="9">莫耳數</text>
+                        </g>
+                        <g class="cursor-pointer" onclick="showTriFormula('mw')">
+                            <circle cx="160" cy="105" r="28" fill="rgba(34,211,238,0.15)" stroke="#22d3ee" stroke-width="2"/>
+                            <text x="160" y="102" text-anchor="middle" fill="#22d3ee" font-size="11" font-weight="bold">M.W.</text>
+                            <text x="160" y="117" text-anchor="middle" fill="#22d3ee88" font-size="9">分子量</text>
+                        </g>
+                        <!-- 運算符號 -->
+                        <text x="110" y="110" text-anchor="middle" fill="#94a3b8" font-size="16" font-weight="bold">×</text>
+                    </svg>
+                </div>
+                <div id="tri-result" class="text-center p-3 bg-slate-900/60 rounded-lg min-h-[48px] flex items-center justify-center">
+                    <p class="text-slate-500 text-sm">← 點擊三角形中想求的變數</p>
+                </div>
+
+                <!-- 三角形 2: 莫耳數 / 濃度 / 體積 -->
+                <p class="text-xs text-slate-500 text-center mb-2 mt-5">莫耳數 ÷ 濃度 ÷ 體積</p>
+                <div class="flex justify-center mb-4">
+                    <svg width="220" height="140" viewBox="0 0 220 140">
+                        <line x1="110" y1="5" x2="10" y2="135" stroke="#475569" stroke-width="2"/>
+                        <line x1="110" y1="5" x2="210" y2="135" stroke="#475569" stroke-width="2"/>
+                        <line x1="10" y1="135" x2="210" y2="135" stroke="#475569" stroke-width="2"/>
+                        <line x1="10" y1="70" x2="210" y2="70" stroke="#475569" stroke-width="1" stroke-dasharray="4"/>
+                        <g class="cursor-pointer" onclick="showTriFormula2('n2')">
+                            <circle cx="110" cy="38" r="28" fill="rgba(59,130,246,0.15)" stroke="#3b82f6" stroke-width="2"/>
+                            <text x="110" y="35" text-anchor="middle" fill="#60a5fa" font-size="11" font-weight="bold">n</text>
+                            <text x="110" y="50" text-anchor="middle" fill="#60a5fa88" font-size="9">莫耳數</text>
+                        </g>
+                        <g class="cursor-pointer" onclick="showTriFormula2('M')">
+                            <circle cx="60" cy="105" r="28" fill="rgba(168,85,247,0.15)" stroke="#a855f7" stroke-width="2"/>
+                            <text x="60" y="102" text-anchor="middle" fill="#a855f7" font-size="11" font-weight="bold">M</text>
+                            <text x="60" y="117" text-anchor="middle" fill="#a855f788" font-size="9">濃度</text>
+                        </g>
+                        <g class="cursor-pointer" onclick="showTriFormula2('V')">
+                            <circle cx="160" cy="105" r="28" fill="rgba(34,211,238,0.15)" stroke="#22d3ee" stroke-width="2"/>
+                            <text x="160" y="102" text-anchor="middle" fill="#22d3ee" font-size="11" font-weight="bold">V</text>
+                            <text x="160" y="117" text-anchor="middle" fill="#22d3ee88" font-size="9">體積(L)</text>
+                        </g>
+                        <text x="110" y="110" text-anchor="middle" fill="#94a3b8" font-size="16" font-weight="bold">×</text>
+                    </svg>
+                </div>
+                <div id="tri-result2" class="text-center p-3 bg-slate-900/60 rounded-lg min-h-[48px] flex items-center justify-center">
+                    <p class="text-slate-500 text-sm">← 點擊三角形中想求的變數</p>
+                </div>
+            </div>
+
+            <!-- 右：滑桿計算器 -->
+            <div class="glass-card">
+                <h3 class="font-bold text-cyan-400 mb-4 text-center">拖拉計算器</h3>
+
+                <!-- 計算器 1: n × M.W. = m -->
+                <div class="p-4 bg-slate-900/40 rounded-xl mb-4">
+                    <p class="text-xs text-slate-500 mb-3 text-center font-bold">莫耳數 × 分子量 = 質量</p>
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-blue-400 font-bold">n (莫耳數)</span>
+                                <span class="text-white font-bold" id="val-n">2</span>
+                            </div>
+                            <input type="range" min="0.5" max="10" step="0.5" value="2" class="w-full accent-blue-500" oninput="calcMass();" id="slider-n">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-cyan-400 font-bold">M.W. (分子量)</span>
+                                <span class="text-white font-bold" id="val-mw">58.5</span>
+                            </div>
+                            <input type="range" min="1" max="200" step="0.5" value="58.5" class="w-full accent-cyan-500" oninput="calcMass();" id="slider-mw">
+                        </div>
+                    </div>
+                    <div class="mt-3 p-3 bg-slate-800 rounded-lg text-center">
+                        <span class="text-blue-400 font-bold" id="show-n">2</span>
+                        <span class="text-slate-500"> × </span>
+                        <span class="text-cyan-400 font-bold" id="show-mw">58.5</span>
+                        <span class="text-slate-500"> = </span>
+                        <span class="text-yellow-300 font-black text-xl" id="show-m">117</span>
+                        <span class="text-yellow-300 text-sm"> g</span>
+                    </div>
+                    <p class="text-[10px] text-slate-600 mt-2 text-center">NaCl 分子量 = 58.5，試試調整看看！</p>
+                </div>
+
+                <!-- 計算器 2: M × V = n → 結合質量 -->
+                <div class="p-4 bg-slate-900/40 rounded-xl">
+                    <p class="text-xs text-slate-500 mb-3 text-center font-bold">濃度 × 體積 = 莫耳數 → × 分子量 = 質量</p>
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-purple-400 font-bold">M (濃度 mol/L)</span>
+                                <span class="text-white font-bold" id="val-M">0.5</span>
+                            </div>
+                            <input type="range" min="0.1" max="5" step="0.1" value="0.5" class="w-full accent-purple-500" oninput="calcChain();" id="slider-M">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-cyan-400 font-bold">V (體積 L)</span>
+                                <span class="text-white font-bold" id="val-V">2</span>
+                            </div>
+                            <input type="range" min="0.1" max="5" step="0.1" value="2" class="w-full accent-cyan-500" oninput="calcChain();" id="slider-V">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-green-400 font-bold">M.W. (分子量)</span>
+                                <span class="text-white font-bold" id="val-mw2">40</span>
+                            </div>
+                            <input type="range" min="1" max="200" step="0.5" value="40" class="w-full accent-green-500" oninput="calcChain();" id="slider-mw2">
+                        </div>
+                    </div>
+                    <div class="mt-3 p-3 bg-slate-800 rounded-lg text-center space-y-1">
+                        <div>
+                            <span class="text-purple-400 font-bold" id="show-M2">0.5</span>
+                            <span class="text-slate-500"> × </span>
+                            <span class="text-cyan-400 font-bold" id="show-V2">2</span>
+                            <span class="text-slate-500"> = n = </span>
+                            <span class="text-blue-400 font-bold" id="show-n2">1</span>
+                            <span class="text-blue-400 text-sm"> mol</span>
+                        </div>
+                        <div>
+                            <span class="text-blue-400 font-bold" id="show-n2b">1</span>
+                            <span class="text-slate-500"> × </span>
+                            <span class="text-green-400 font-bold" id="show-mw2b">40</span>
+                            <span class="text-slate-500"> = </span>
+                            <span class="text-yellow-300 font-black text-xl" id="show-m2">40</span>
+                            <span class="text-yellow-300 text-sm"> g</span>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-600 mt-2 text-center">NaOH 分子量 = 40，常見考題：配製指定濃度需要多少克？</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: 溶液配製與稀釋 -->
+    <div class="slide" id="s3">
+        <h2 class="text-2xl md:text-4xl font-bold mb-8 self-start border-l-8 border-blue-500 pl-6">三、配製與稀釋 (C₁V₁ = C₂V₂)</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-5xl">
+            <div class="glass-card">
+                <h3 class="font-bold text-blue-400 mb-4">稀釋核心觀念：莫耳數不變</h3>
+                <div class="formula-box w-full text-center mb-6">M₁V₁ = M₂V₂</div>
+                <ul class="text-sm space-y-2 text-slate-400">
+                    <li>● 稀釋前濃度 × 體積 = 稀釋後濃度 × 體積</li>
+                    <li>● 加水會使體積變大，濃度變小</li>
+                </ul>
+            </div>
+            <div class="flex flex-col items-center justify-center space-y-6">
+                <div class="flex items-end gap-10">
+                    <div class="flex flex-col items-center">
+                        <div class="beaker"><div class="liquid" style="height: 30%; background: rgba(37, 99, 235, 0.8);"></div></div>
+                        <p class="text-xs mt-2 font-bold text-slate-400">濃溶液 (V₁)</p>
+                    </div>
+                    <div class="text-2xl font-bold mb-8 text-slate-500">→</div>
+                    <div class="flex flex-col items-center">
+                        <div class="beaker"><div class="liquid" style="height: 90%; background: rgba(37, 99, 235, 0.3);"></div></div>
+                        <p class="text-xs mt-2 font-bold text-slate-400">稀溶液 (V₂)</p>
+                    </div>
+                </div>
+                <p class="text-sm text-center text-slate-500">配製流程：先計算質量 → 少量水溶解 → 加水至刻度</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: 水的解離與 Kw -->
+    <div class="slide" id="s4">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-blue-500 pl-6">四、水的解離與離子積</h2>
+        <div class="w-full max-w-4xl space-y-8">
+            <div class="glass-card text-center">
+                <p class="text-2xl font-black mb-4 text-white">H₂O ⇌ H⁺ + OH⁻</p>
+                <p class="text-slate-400">在 25°C 的純水中：</p>
+                <div class="flex justify-center gap-8 my-6">
+                    <div class="formula-box">[H⁺] = 10⁻⁷ M</div>
+                    <div class="formula-box">[OH⁻] = 10⁻⁷ M</div>
+                </div>
+            </div>
+            <div class="glass-card bg-blue-900/20 border-blue-900/50">
+                <h4 class="font-bold text-blue-300 mb-2">重要不變關係 (25°C)：</h4>
+                <p class="text-3xl font-black text-center text-cyan-300">[H⁺] × [OH⁻] = 10⁻¹⁴</p>
+                <p class="text-sm text-center text-blue-400/70 mt-4">※ 一方增加，另一方必減少，乘積恆定。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: pH 值定義與濃度關係 -->
+    <div class="slide" id="s5">
+        <h2 class="text-2xl md:text-4xl font-bold mb-6 self-start border-l-8 border-blue-500 pl-6">五、pH 值與氫離子濃度</h2>
+        <div class="w-full max-w-5xl">
+            <div class="ph-bar w-full flex justify-between items-center px-4">
+                <span class="font-black text-white">0</span>
+                <span class="font-black text-white">7</span>
+                <span class="font-black text-white">14</span>
+            </div>
+            <div class="grid grid-cols-3 gap-6 mt-10">
+                <div class="glass-card text-center border-t-4 border-t-red-500">
+                    <h4 class="font-bold text-red-400">酸性</h4>
+                    <p class="text-2xl font-black my-2 text-white">pH < 7</p>
+                    <p class="text-sm text-slate-400">[H⁺] > 10⁻⁷ M</p>
+                </div>
+                <div class="glass-card text-center border-t-4 border-t-green-500">
+                    <h4 class="font-bold text-green-400">中性</h4>
+                    <p class="text-2xl font-black my-2 text-white">pH = 7</p>
+                    <p class="text-sm text-slate-400">[H⁺] = 10⁻⁷ M</p>
+                </div>
+                <div class="glass-card text-center border-t-4 border-t-blue-500">
+                    <h4 class="font-bold text-blue-400">鹼性</h4>
+                    <p class="text-2xl font-black my-2 text-white">pH > 7</p>
+                    <p class="text-sm text-slate-400">[H⁺] < 10⁻⁷ M</p>
+                </div>
+            </div>
+            <div class="mt-8 p-6 bg-slate-800/80 border border-slate-700 text-white rounded-xl text-center">
+                <p class="text-xl font-bold mb-2">超必考觀念：pH 差 1 單位 ＝ 濃度差 10 倍</p>
+                <p class="text-slate-400 text-sm">pH = 1 ([H⁺]=10⁻¹) vs pH = 3 ([H⁺]=10⁻³) → 濃度差 100 倍</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: 酸鹼稀釋的極限 -->
+    <div class="slide" id="s6">
+        <h2 class="text-2xl md:text-4xl font-bold mb-12 self-start border-l-8 border-blue-500 pl-6">六、稀釋後的 pH 變化</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-5xl">
+            <div class="glass-card">
+                <h3 class="font-bold text-red-400 mb-4">酸的稀釋</h3>
+                <p class="text-slate-300">加入水後，[H⁺] 降低 → <span class="font-bold text-white">pH 變大</span>。</p>
+                <p class="mt-4 p-3 bg-red-900/20 border-l-4 border-red-500 font-bold text-red-300">
+                    極限：只能趨近於 7，永遠不會超過 7 (變鹼)。
+                </p>
+            </div>
+            <div class="glass-card">
+                <h3 class="font-bold text-blue-400 mb-4">鹼的稀釋</h3>
+                <p class="text-slate-300">加入水後，[OH⁻] 降低 → <span class="font-bold text-white">pH 變小</span>。</p>
+                <p class="mt-4 p-3 bg-blue-900/20 border-l-4 border-blue-500 font-bold text-blue-300">
+                    極限：只能趨近於 7，永遠不會低於 7 (變酸)。
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: 重點整合與易錯陷阱 -->
+    <div class="slide" id="s7">
+        <div class="text-center">
+            <h2 class="text-3xl md:text-5xl font-black text-white mb-12">考前重點 Check!</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
+                <div class="glass-card bg-green-900/20 border-green-900/50">
+                    <h4 class="font-bold text-green-400 mb-2">正確觀念</h4>
+                    <ul class="text-sm space-y-2 text-green-300/70">
+                        <li>● 強弱是指「解離程度」，濃度是指「溶質多寡」。</li>
+                        <li>● 稀釋前後莫耳數不變：M₁V₁ = M₂V₂。</li>
+                        <li>● [H⁺] = 10⁻ⁿ M 則 pH = n。</li>
+                    </ul>
+                </div>
+                <div class="glass-card bg-red-900/20 border-red-900/50">
+                    <h4 class="font-bold text-red-400 mb-2">易錯陷阱</h4>
+                    <ul class="text-sm space-y-2 text-red-300/70">
+                        <li>● 誤以為 pH 越大酸性越強（其實是越弱）。</li>
+                        <li>● 誤以為酸無限稀釋會變鹼性（只能趨近 7）。</li>
+                        <li>● 計算濃度時忘記將體積單位換算成「公升 (L)」。</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-12">
+                <button onclick="goToSlide(0)" class="nav-btn bg-slate-200 !text-slate-700">重新複習</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 控制按鈕 -->
+    <div class="nav-bar-bottom fixed bottom-6 left-1/2 -translate-x-1/2 flex flex-row gap-4 z-50 items-center">
+        <button id="prevBtn" class="nav-btn whitespace-nowrap" onclick="move(-1)">前一頁</button>
+        <div class="flex items-center px-4 font-bold text-slate-500 whitespace-nowrap" id="pageNum">1 / 8</div>
+        <button id="nextBtn" class="nav-btn whitespace-nowrap" onclick="move(1)">下一頁</button>
+    </div>
+
+    <script>
+        let current = 0;
+        const total = 8;
+
+        function update() {
+            document.querySelectorAll('.slide').forEach((s, i) => {
+                s.classList.toggle('active', i === current);
+            });
+            document.getElementById('prevBtn').disabled = current === 0;
+            document.getElementById('nextBtn').disabled = current === total - 1;
+            document.getElementById('pageNum').innerText = `${current + 1} / ${total}`;
+        }
+
+        function move(n) {
+            current = Math.max(0, Math.min(total - 1, current + n));
+            update();
+        }
+
+        function goToSlide(n) {
+            current = n;
+            update();
+        }
+
+        // === 公式三角形 ===
+        function showTriFormula(target) {
+            var el = document.getElementById('tri-result');
+            if (target === 'mass') {
+                el.innerHTML = '<p class="text-lg"><span class="text-red-400 font-black">m</span> = <span class="text-blue-400">n</span> × <span class="text-cyan-400">M.W.</span></p><p class="text-xs text-slate-500 mt-1">質量 = 莫耳數 × 分子量</p>';
+            } else if (target === 'mole') {
+                el.innerHTML = '<p class="text-lg"><span class="text-blue-400 font-black">n</span> = <span class="text-red-400">m</span> ÷ <span class="text-cyan-400">M.W.</span></p><p class="text-xs text-slate-500 mt-1">莫耳數 = 質量 ÷ 分子量</p>';
+            } else {
+                el.innerHTML = '<p class="text-lg"><span class="text-cyan-400 font-black">M.W.</span> = <span class="text-red-400">m</span> ÷ <span class="text-blue-400">n</span></p><p class="text-xs text-slate-500 mt-1">分子量 = 質量 ÷ 莫耳數</p>';
+            }
+        }
+
+        function showTriFormula2(target) {
+            var el = document.getElementById('tri-result2');
+            if (target === 'n2') {
+                el.innerHTML = '<p class="text-lg"><span class="text-blue-400 font-black">n</span> = <span class="text-purple-400">M</span> × <span class="text-cyan-400">V</span></p><p class="text-xs text-slate-500 mt-1">莫耳數 = 濃度 × 體積</p>';
+            } else if (target === 'M') {
+                el.innerHTML = '<p class="text-lg"><span class="text-purple-400 font-black">M</span> = <span class="text-blue-400">n</span> ÷ <span class="text-cyan-400">V</span></p><p class="text-xs text-slate-500 mt-1">濃度 = 莫耳數 ÷ 體積</p>';
+            } else {
+                el.innerHTML = '<p class="text-lg"><span class="text-cyan-400 font-black">V</span> = <span class="text-blue-400">n</span> ÷ <span class="text-purple-400">M</span></p><p class="text-xs text-slate-500 mt-1">體積 = 莫耳數 ÷ 濃度</p>';
+            }
+        }
+
+        // === 滑桿計算器 ===
+        function calcMass() {
+            var n = parseFloat(document.getElementById('slider-n').value);
+            var mw = parseFloat(document.getElementById('slider-mw').value);
+            var m = (n * mw).toFixed(1);
+            document.getElementById('val-n').innerText = n;
+            document.getElementById('val-mw').innerText = mw;
+            document.getElementById('show-n').innerText = n;
+            document.getElementById('show-mw').innerText = mw;
+            document.getElementById('show-m').innerText = m;
+        }
+
+        function calcChain() {
+            var M = parseFloat(document.getElementById('slider-M').value);
+            var V = parseFloat(document.getElementById('slider-V').value);
+            var mw2 = parseFloat(document.getElementById('slider-mw2').value);
+            var n = (M * V).toFixed(2);
+            var mass = (n * mw2).toFixed(1);
+            document.getElementById('val-M').innerText = M;
+            document.getElementById('val-V').innerText = V;
+            document.getElementById('val-mw2').innerText = mw2;
+            document.getElementById('show-M2').innerText = M;
+            document.getElementById('show-V2').innerText = V;
+            document.getElementById('show-n2').innerText = n;
+            document.getElementById('show-n2b').innerText = n;
+            document.getElementById('show-mw2b').innerText = mw2;
+            document.getElementById('show-m2').innerText = mass;
+        }
+
+        update();
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') move(1);
+            if (e.key === 'ArrowLeft') move(-1);
+        });
+    </script>
+</body>
+</html>
