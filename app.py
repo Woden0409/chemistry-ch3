@@ -8,7 +8,7 @@ app = Flask(__name__, static_folder='.', static_url_path='')
 def index():
     return send_from_directory('.', 'index.html')
 
-@app.route('/update', methods=['POST'])
+@app.route('/update', methods=['GET', 'POST'])
 def webhook():
     """GitHub webhook: push 後自動 git pull"""
     repo_dir = os.path.dirname(os.path.abspath(__file__))
