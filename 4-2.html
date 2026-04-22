@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4-2 可逆反應與平衡</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #0f172a;
+            color: #f1f5f9;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .slide {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            padding: 40px 80px;
+            box-sizing: border-box;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.5s ease-out forwards;
+            padding-bottom: 80px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .nav-btn {
+            background: #334155;
+            color: #f1f5f9;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid #475569;
+        }
+        .nav-btn:hover:not(:disabled) { background: #3b82f6; border-color: #60a5fa; }
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .arrow-dynamic { transition: stroke-width 0.3s, stroke 0.3s; }
+
+        @media (max-width: 768px) {
+            body { overflow: auto; height: auto; }
+            .slide { padding: 20px 16px; height: auto; min-height: 100vh; }
+            .slide.active { padding-bottom: 100px; overflow-y: auto; }
+            .nav-btn { padding: 8px 16px; font-size: 0.85rem; }
+            .nav-bar-bottom { bottom: 8px; gap: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Slide 1: 封面 -->
+    <div class="slide active" id="s0">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-7xl font-black text-white mb-6">4-2 可逆反應與平衡</h1>
+            <div class="w-32 h-1.5 bg-violet-500 mx-auto mb-8"></div>
+            <p class="text-2xl text-slate-400 font-medium tracking-widest">平衡不是停止，而是來回一樣快</p>
+        </div>
+    </div>
+
+    <!-- Slide 2: 可逆反應定義 -->
+    <div class="slide" id="s1">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-violet-500 pl-6">一、可逆反應的基本概念</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl">
+            <div class="space-y-6">
+                <div class="glass-card border-l-4 border-violet-500">
+                    <p class="text-xs text-slate-500 mb-2 tracking-widest">定義</p>
+                    <p class="text-xl leading-relaxed">正反應與逆反應可以<span class="text-white font-bold">同時進行</span>的反應</p>
+                </div>
+                <div class="glass-card text-center font-mono text-2xl">
+                    A + B <span class="text-violet-400">⇌</span> C + D
+                </div>
+            </div>
+            <div class="space-y-4">
+                <div class="glass-card flex items-start gap-4">
+                    <div class="w-10 h-10 rounded bg-blue-900/30 flex items-center justify-center text-blue-400 font-bold flex-shrink-0">→</div>
+                    <div>
+                        <h4 class="font-bold">正反應</h4>
+                        <p class="text-slate-400 text-sm">反應物消耗，產生生成物</p>
+                    </div>
+                </div>
+                <div class="glass-card flex items-start gap-4">
+                    <div class="w-10 h-10 rounded bg-rose-900/30 flex items-center justify-center text-rose-400 font-bold flex-shrink-0">←</div>
+                    <div>
+                        <h4 class="font-bold">逆反應</h4>
+                        <p class="text-slate-400 text-sm">生成物反應，回到反應物</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: 氯化亞鈷實驗 -->
+    <div class="slide" id="s2">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-violet-500 pl-6">二、可逆反應實例：氯化亞鈷</h2>
+        <div class="flex flex-col md:flex-row items-center justify-center gap-6 w-full max-w-4xl">
+            <div class="glass-card flex-1 text-center bg-blue-900/20 border-blue-500/30">
+                <p class="text-blue-400 font-bold mb-2">乾燥狀態</p>
+                <p class="text-4xl font-bold text-blue-400 mb-3">藍色</p>
+                <p class="text-sm text-slate-400">CoCl₂</p>
+            </div>
+            <div class="text-4xl text-slate-600">⇌</div>
+            <div class="glass-card flex-1 text-center bg-rose-900/20 border-rose-500/30">
+                <p class="text-rose-400 font-bold mb-2">含水狀態</p>
+                <p class="text-4xl font-bold text-rose-400 mb-3">粉紅色</p>
+                <p class="text-sm text-slate-400">CoCl₂ · 6H₂O</p>
+            </div>
+        </div>
+        <div class="mt-8 glass-card w-full max-w-4xl text-center italic text-slate-400 text-sm">
+            注意：並非所有反應皆可逆，例如「燃燒」屬於不可逆反應。
+        </div>
+    </div>
+
+    <!-- Slide 4: 動態平衡定義 -->
+    <div class="slide" id="s3">
+        <h2 class="text-2xl md:text-4xl font-bold mb-8 self-start border-l-8 border-violet-500 pl-6">三、動態平衡的本質</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 w-full max-w-6xl">
+            <div class="lg:col-span-3 bg-slate-900/50 rounded-2xl border border-slate-700 relative" style="min-height:250px;">
+                <svg viewBox="0 0 400 200" class="w-full h-full">
+                    <line x1="200" y1="20" x2="200" y2="180" stroke="#334155" stroke-dasharray="4" />
+                    <text x="80" y="30" fill="#64748b" font-size="12">反應物</text>
+                    <text x="280" y="30" fill="#64748b" font-size="12">生成物</text>
+                    <path id="forwardArrow" d="M 160 80 L 240 80 L 230 70 M 240 80 L 230 90" stroke="#60a5fa" stroke-width="2" fill="none" class="arrow-dynamic" />
+                    <path id="backwardArrow" d="M 240 120 L 160 120 L 170 110 M 160 120 L 170 130" stroke="#f43f5e" stroke-width="2" fill="none" class="arrow-dynamic" />
+                    <text x="200" y="165" text-anchor="middle" fill="#64748b" font-size="10" id="balanceLabel">點擊下方按鈕模擬</text>
+                </svg>
+                <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3">
+                    <button class="nav-btn text-xs py-2 px-4" onclick="setBalanceState('unbalanced')">反應剛開始</button>
+                    <button class="nav-btn text-xs py-2 px-4" style="background:#7c3aed;border-color:#7c3aed;" onclick="setBalanceState('balanced')">達成平衡</button>
+                </div>
+            </div>
+            <div class="lg:col-span-2 glass-card bg-violet-900/10 border-violet-500/20">
+                <h4 class="text-violet-400 font-bold mb-4">平衡兩大關鍵：</h4>
+                <ul class="space-y-4">
+                    <li class="flex items-center gap-3">
+                        <div class="w-2 h-2 bg-violet-400 rounded-full flex-shrink-0"></div>
+                        <p class="text-xl font-bold">正速率 = 逆速率</p>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <div class="w-2 h-2 bg-violet-400 rounded-full flex-shrink-0"></div>
+                        <p class="text-slate-400">外觀看起來沒變，但微觀下<span class="text-white font-bold">仍在反應</span></p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: 速率變化圖 -->
+    <div class="slide" id="s4">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-violet-500 pl-6">四、R-t 圖判讀</h2>
+        <div class="flex flex-col md:flex-row gap-8 items-center w-full max-w-5xl">
+            <div class="flex-1 glass-card">
+                <svg viewBox="0 0 240 160" class="w-full h-auto">
+                    <line x1="30" y1="130" x2="220" y2="130" stroke="#f1f5f9" />
+                    <line x1="30" y1="130" x2="30" y2="20" stroke="#f1f5f9" />
+                    <text x="125" y="155" fill="#64748b" font-size="9" text-anchor="middle">時間</text>
+                    <text x="15" y="75" fill="#64748b" font-size="9" text-anchor="middle" transform="rotate(-90, 15, 75)">速率</text>
+                    <path d="M 30 30 Q 80 80 200 80" stroke="#60a5fa" stroke-width="2.5" fill="none" />
+                    <text x="45" y="25" fill="#60a5fa" font-size="10">正反應↘</text>
+                    <path d="M 30 130 Q 80 80 200 80" stroke="#f43f5e" stroke-width="2.5" fill="none" />
+                    <text x="45" y="145" fill="#f43f5e" font-size="10">逆反應↗</text>
+                    <line x1="130" y1="135" x2="130" y2="20" stroke="#334155" stroke-dasharray="3" />
+                    <text x="135" y="18" fill="#a78bfa" font-size="9">達平衡</text>
+                </svg>
+            </div>
+            <div class="flex-1 space-y-4">
+                <div class="glass-card">
+                    <p><span class="text-blue-400 font-bold">剛開始：</span>正反應最快，逆反應為 0</p>
+                </div>
+                <div class="glass-card">
+                    <p><span class="text-slate-400 font-bold">反應中：</span>正變慢，逆變快</p>
+                </div>
+                <div class="glass-card border-violet-500/30">
+                    <p><span class="text-violet-400 font-bold">達平衡：</span>兩速率交會，成水平線</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: 平衡三條件 -->
+    <div class="slide" id="s5">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-violet-500 pl-6">五、平衡必須具備的三條件</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">
+            <div class="glass-card text-center">
+                <div class="text-3xl mb-4">🔄</div>
+                <h4 class="font-bold mb-2">可逆反應</h4>
+                <p class="text-slate-400 text-sm">反應具備雙向進行的可能性</p>
+            </div>
+            <div class="glass-card text-center">
+                <div class="text-3xl mb-4">📦</div>
+                <h4 class="font-bold mb-2">密閉系統</h4>
+                <p class="text-slate-400 text-sm">物質不能隨意離開或進入</p>
+            </div>
+            <div class="glass-card text-center">
+                <div class="text-3xl mb-4">🌡️</div>
+                <h4 class="font-bold mb-2">環境穩定</h4>
+                <p class="text-slate-400 text-sm">溫度、壓力必須固定不變</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: 勒沙特列原理 -->
+    <div class="slide" id="s6">
+        <h2 class="text-2xl md:text-4xl font-bold mb-8 self-start border-l-8 border-violet-500 pl-6">六、勒沙特列原理</h2>
+        <div class="w-full max-w-4xl text-center">
+            <div class="glass-card bg-violet-900/10 border-violet-500/20 p-8 mb-8">
+                <p class="text-xl md:text-2xl font-bold text-white leading-relaxed">
+                    「當環境改變時，系統會朝向<br>
+                    <span class="text-violet-400 underline underline-offset-8">抵消／減少改變</span>的方向移動。」
+                </p>
+            </div>
+            <div class="flex flex-col md:flex-row justify-center gap-6">
+                <div class="glass-card flex items-center gap-3">
+                    <div class="w-4 h-4 rounded-full bg-blue-500 flex-shrink-0"></div>
+                    <span class="text-slate-300">增加某物 → 消耗它</span>
+                </div>
+                <div class="glass-card flex items-center gap-3">
+                    <div class="w-4 h-4 rounded-full bg-rose-500 flex-shrink-0"></div>
+                    <span class="text-slate-300">減少某物 → 產生它</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: 勒沙特列模擬 -->
+    <div class="slide" id="s7">
+        <h2 class="text-2xl md:text-4xl font-bold mb-8 self-start border-l-8 border-violet-500 pl-6">七、勒沙特列實戰模擬</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl">
+            <div class="space-y-4">
+                <div class="glass-card">
+                    <h4 class="text-blue-400 font-bold mb-3">操作：改變濃度</h4>
+                    <div class="flex flex-col gap-2">
+                        <button onclick="simulateShift('addA')" class="nav-btn text-sm w-full">增加反應物 (A+B)</button>
+                        <button onclick="simulateShift('addC')" class="nav-btn text-sm w-full">增加生成物 (C+D)</button>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <h4 class="text-rose-400 font-bold mb-3">操作：改變溫度</h4>
+                    <button onclick="simulateShift('heat')" class="nav-btn text-sm w-full" style="background:#7f1d1d;border-color:#991b1b;">升高溫度（吸熱方向加快）</button>
+                </div>
+                <button onclick="simulateShift('reset')" class="nav-btn text-sm w-full bg-slate-600">重置平衡</button>
+            </div>
+            <div class="glass-card flex flex-col items-center justify-center min-h-[200px]">
+                <div id="shiftIndicator" class="text-5xl transition-all duration-500">⚖️</div>
+                <div id="shiftText" class="mt-6 text-lg font-bold text-center text-slate-500">系統平衡中</div>
+                <div id="shiftArrow" class="mt-3 text-4xl opacity-0 transition-opacity duration-500">→</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: 考題陷阱 -->
+    <div class="slide" id="s8">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-rose-500 pl-6">八、考前陷阱題預警</h2>
+        <div class="space-y-4 w-full max-w-5xl">
+            <div class="flex gap-4 p-5 bg-rose-900/10 rounded-xl border border-rose-500/20">
+                <div class="text-2xl font-bold text-rose-500 flex-shrink-0">Q1</div>
+                <div>
+                    <p class="font-bold mb-1">平衡時，正反應速率會剛好等於逆反應速率嗎？</p>
+                    <p class="text-emerald-400 font-bold">YES！</p>
+                    <p class="text-slate-400 text-sm">這是平衡唯一的黃金定義。速率一旦不相等，平衡就會移動。</p>
+                </div>
+            </div>
+            <div class="flex gap-4 p-5 glass-card">
+                <div class="text-2xl font-bold text-blue-500 flex-shrink-0">Q2</div>
+                <div>
+                    <p class="font-bold mb-1">平衡時，反應物的濃度一定要等於生成物嗎？</p>
+                    <p class="text-rose-400 font-bold">NO！</p>
+                    <p class="text-slate-400 text-sm">平衡只要濃度「不再變動」即可，兩邊濃度不一定相等。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: 總結 -->
+    <div class="slide" id="s9">
+        <div class="text-center">
+            <h2 class="text-3xl md:text-5xl font-black text-white mb-10">4-2 重點總整理</h2>
+            <div class="glass-card inline-block px-10 py-8 mb-8">
+                <p class="text-xl md:text-2xl font-light italic leading-relaxed text-slate-300">
+                    「平衡就是<span class="text-violet-400 font-bold">來回一樣快</span>，<br>
+                    改變條件就會往<span class="text-white font-bold">抵抗改變</span>的方向移動。」
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <div class="glass-card text-center">
+                    <div class="text-xl font-bold text-white mb-1">速率相等</div>
+                    <div class="text-slate-500 text-sm">正反應 = 逆反應</div>
+                </div>
+                <div class="glass-card text-center">
+                    <div class="text-xl font-bold text-white mb-1">外觀不變</div>
+                    <div class="text-slate-500 text-sm">顏色、沉澱、濃度固定</div>
+                </div>
+                <div class="glass-card text-center">
+                    <div class="text-xl font-bold text-white mb-1">仍在反應</div>
+                    <div class="text-slate-500 text-sm">微觀下的動態變化</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-bar-bottom fixed bottom-6 left-1/2 -translate-x-1/2 flex flex-row gap-4 z-50 items-center">
+        <button id="prevBtn" class="nav-btn whitespace-nowrap" onclick="move(-1)">前一頁</button>
+        <div class="flex items-center px-4 font-bold text-slate-500 whitespace-nowrap" id="pageNum">1 / 10</div>
+        <button id="nextBtn" class="nav-btn whitespace-nowrap" onclick="move(1)">下一頁</button>
+    </div>
+
+    <script>
+        let current = 0;
+        const total = 10;
+
+        function update() {
+            document.querySelectorAll('.slide').forEach(function(s, i) {
+                s.classList.toggle('active', i === current);
+            });
+            document.getElementById('prevBtn').disabled = current === 0;
+            document.getElementById('nextBtn').disabled = current === total - 1;
+            document.getElementById('pageNum').innerText = (current + 1) + ' / ' + total;
+        }
+
+        function move(n) {
+            current = Math.max(0, Math.min(total - 1, current + n));
+            update();
+        }
+
+        // 動態平衡模擬
+        function setBalanceState(state) {
+            var fw = document.getElementById('forwardArrow');
+            var bw = document.getElementById('backwardArrow');
+            var label = document.getElementById('balanceLabel');
+
+            if (state === 'balanced') {
+                fw.setAttribute('stroke-width', '4');
+                bw.setAttribute('stroke-width', '4');
+                fw.setAttribute('stroke', '#a78bfa');
+                bw.setAttribute('stroke', '#a78bfa');
+                label.textContent = '正速率 = 逆速率（平衡！）';
+                label.setAttribute('fill', '#a78bfa');
+            } else {
+                fw.setAttribute('stroke-width', '6');
+                bw.setAttribute('stroke-width', '1');
+                fw.setAttribute('stroke', '#60a5fa');
+                bw.setAttribute('stroke', '#f43f5e');
+                label.textContent = '正速率 >> 逆速率';
+                label.setAttribute('fill', '#64748b');
+            }
+        }
+
+        // 勒沙特列模擬
+        function simulateShift(type) {
+            var indicator = document.getElementById('shiftIndicator');
+            var text = document.getElementById('shiftText');
+            var arrow = document.getElementById('shiftArrow');
+
+            if (type === 'reset') {
+                indicator.style.transform = 'scale(1)';
+                indicator.innerText = '⚖️';
+                text.innerText = '系統平衡中';
+                text.style.color = '#64748b';
+                arrow.style.opacity = '0';
+                return;
+            }
+
+            indicator.style.transform = 'scale(1.2)';
+            arrow.style.opacity = '1';
+
+            if (type === 'addA') {
+                text.innerText = '增加反應物 → 平衡右移（消耗反應物）';
+                text.style.color = '#60a5fa';
+                arrow.innerText = '→';
+                arrow.style.color = '#60a5fa';
+            } else if (type === 'addC') {
+                text.innerText = '增加生成物 → 平衡左移（消耗生成物）';
+                text.style.color = '#f43f5e';
+                arrow.innerText = '←';
+                arrow.style.color = '#f43f5e';
+            } else if (type === 'heat') {
+                text.innerText = '加熱 → 向吸熱方向移動';
+                text.style.color = '#fb923c';
+                arrow.innerText = '↔';
+                arrow.style.color = '#fb923c';
+                indicator.innerText = '🔥';
+            }
+
+            setTimeout(function() {
+                indicator.style.transform = 'scale(1)';
+            }, 500);
+        }
+
+        update();
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') move(1);
+            if (e.key === 'ArrowLeft') move(-1);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4-1 反應速率</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #0f172a;
+            color: #f1f5f9;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .slide {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            padding: 40px 80px;
+            box-sizing: border-box;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.5s ease-out forwards;
+            padding-bottom: 80px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .nav-btn {
+            background: #334155;
+            color: #f1f5f9;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid #475569;
+        }
+        .nav-btn:hover:not(:disabled) { background: #3b82f6; border-color: #60a5fa; }
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .atom { transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .trap-card { transition: all 0.3s; }
+        .trap-card:hover { transform: translateY(-3px); border-color: #f43f5e; }
+
+        @media (max-width: 768px) {
+            body { overflow: auto; height: auto; }
+            .slide { padding: 20px 16px; height: auto; min-height: 100vh; }
+            .slide.active { padding-bottom: 100px; overflow-y: auto; }
+            .nav-btn { padding: 8px 16px; font-size: 0.85rem; }
+            .nav-bar-bottom { bottom: 8px; gap: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Slide 1: 封面 -->
+    <div class="slide active" id="s0">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-7xl font-black text-white mb-6">4-1 反應速率</h1>
+            <div class="w-32 h-1.5 bg-orange-500 mx-auto mb-8"></div>
+            <p class="text-2xl text-slate-400 font-medium tracking-widest">粒子碰撞的科學</p>
+        </div>
+    </div>
+
+    <!-- Slide 2: 基本定義 -->
+    <div class="slide" id="s1">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-orange-500 pl-6">一、反應速率的定義</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl">
+            <div class="space-y-6">
+                <div class="glass-card border-l-4 border-orange-500">
+                    <p class="text-xs text-slate-500 mb-2 tracking-widest">定義</p>
+                    <p class="text-xl font-bold leading-relaxed">
+                        單位時間內，反應物<span class="text-rose-400">減少的量</span>
+                        或生成物<span class="text-emerald-400">增加的量</span>
+                    </p>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="glass-card text-center">
+                        <p class="text-orange-400 text-sm mb-1 font-bold">反應越快</p>
+                        <p class="text-lg">變化量越多</p>
+                    </div>
+                    <div class="glass-card text-center">
+                        <p class="text-rose-400 text-sm mb-1 font-bold">反應越慢</p>
+                        <p class="text-lg">變化極少</p>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-card">
+                <h4 class="text-slate-500 font-bold text-xs tracking-widest mb-4">生活實例</h4>
+                <ul class="space-y-4">
+                    <li class="flex items-center gap-3">
+                        <div class="w-3 h-3 bg-rose-500 rounded-full flex-shrink-0"></div>
+                        <span>燃燒、爆炸 — <strong class="text-white">極快</strong></span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <div class="w-3 h-3 bg-amber-500 rounded-full flex-shrink-0"></div>
+                        <span>鐵生鏽、鐘乳石形成 — <strong class="text-white">極慢</strong></span>
+                    </li>
+                    <li class="flex items-center gap-3 text-slate-500">
+                        <div class="w-3 h-3 bg-slate-600 rounded-full flex-shrink-0"></div>
+                        <span>金在空氣中 — 幾乎不反應</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: 現象觀察 -->
+    <div class="slide" id="s2">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-orange-500 pl-6">二、如何判斷反應快慢？</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">
+            <div class="glass-card flex flex-col items-center text-center">
+                <div class="w-14 h-14 bg-cyan-900/30 rounded-xl flex items-center justify-center mb-4">
+                    <span class="text-2xl">💨</span>
+                </div>
+                <h3 class="text-lg font-bold mb-2">氣體產生</h3>
+                <p class="text-slate-400 text-sm">測量單位時間內氣泡產生的多寡</p>
+            </div>
+            <div class="glass-card flex flex-col items-center text-center">
+                <div class="w-14 h-14 bg-emerald-900/30 rounded-xl flex items-center justify-center mb-4">
+                    <span class="text-2xl">⬇️</span>
+                </div>
+                <h3 class="text-lg font-bold mb-2">沉澱生成</h3>
+                <p class="text-slate-400 text-sm">觀察沉澱物遮住瓶底十字的時間</p>
+            </div>
+            <div class="glass-card flex flex-col items-center text-center">
+                <div class="w-14 h-14 bg-rose-900/30 rounded-xl flex items-center justify-center mb-4">
+                    <span class="text-2xl">🎨</span>
+                </div>
+                <h3 class="text-lg font-bold mb-2">顏色改變</h3>
+                <p class="text-slate-400 text-sm">比較反應物或生成物顏色的深淺</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: 碰撞學說 (互動動畫) -->
+    <div class="slide" id="s3">
+        <h2 class="text-2xl md:text-4xl font-bold mb-8 self-start border-l-8 border-orange-500 pl-6">三、碰撞學說</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 w-full max-w-6xl">
+            <div class="lg:col-span-3 bg-slate-900/50 rounded-2xl relative overflow-hidden border border-slate-700" style="min-height:250px;" id="collisionArena">
+                <svg viewBox="0 0 400 200" class="w-full h-full">
+                    <g id="atomA" class="atom">
+                        <circle cx="50" cy="100" r="18" fill="#f97316" fill-opacity="0.7" />
+                        <circle cx="50" cy="100" r="18" fill="none" stroke="#f97316" stroke-width="2" />
+                        <text x="50" y="105" text-anchor="middle" fill="white" font-size="10" font-weight="bold">A</text>
+                    </g>
+                    <g id="atomB" class="atom">
+                        <circle cx="350" cy="100" r="18" fill="#3b82f6" fill-opacity="0.7" />
+                        <circle cx="350" cy="100" r="18" fill="none" stroke="#3b82f6" stroke-width="2" />
+                        <text x="350" y="105" text-anchor="middle" fill="white" font-size="10" font-weight="bold">B</text>
+                    </g>
+                </svg>
+                <div id="collisionResult" class="absolute inset-0 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+                    <div class="text-3xl font-black text-emerald-400">有效碰撞！反應發生</div>
+                </div>
+                <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3">
+                    <button class="nav-btn text-xs py-2 px-4" onclick="runCollision(false)">無效碰撞</button>
+                    <button class="nav-btn text-xs py-2 px-4" style="background:#ea580c;border-color:#ea580c;" onclick="runCollision(true)">有效碰撞</button>
+                    <button class="nav-btn text-xs py-2 px-4 bg-slate-600" onclick="resetCollision()">重置</button>
+                </div>
+            </div>
+            <div class="lg:col-span-2 glass-card">
+                <h4 class="text-orange-400 font-bold mb-4">有效碰撞兩大條件：</h4>
+                <ul class="space-y-4">
+                    <li class="flex items-start gap-3">
+                        <span class="w-6 h-6 rounded bg-slate-800 flex items-center justify-center text-xs text-white flex-shrink-0">1</span>
+                        <p class="text-slate-300">具備<span class="text-white font-bold">足夠能量</span>（活化能）</p>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="w-6 h-6 rounded bg-slate-800 flex items-center justify-center text-xs text-white flex-shrink-0">2</span>
+                        <p class="text-slate-300">碰撞<span class="text-white font-bold">方向正確</span></p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: 數學關係 -->
+    <div class="slide" id="s4">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-orange-500 pl-6">四、反應速率與時間的關係</h2>
+        <div class="w-full max-w-4xl text-center space-y-8">
+            <div class="glass-card inline-block px-12 py-8">
+                <div class="text-5xl md:text-6xl font-mono tracking-tighter mb-3">
+                    R ∝ <span class="text-orange-400">1</span> / <span class="text-rose-400">t</span>
+                </div>
+                <p class="text-slate-500 font-mono">速率與時間成反比</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto text-left">
+                <div class="glass-card">
+                    <p class="text-rose-400 font-bold text-xl mb-2">t（時間）越短</p>
+                    <p class="text-slate-400">反應越快，1/t 數值越大</p>
+                </div>
+                <div class="glass-card">
+                    <p class="text-orange-400 font-bold text-xl mb-2">1/t 越大</p>
+                    <p class="text-slate-400">代表單位時間內變化越多</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: 影響變因 -->
+    <div class="slide" id="s5">
+        <h2 class="text-2xl md:text-4xl font-bold mb-8 self-start border-l-8 border-orange-500 pl-6">五、影響反應速率的五大因素</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-6xl">
+            <div class="glass-card border-t-4 border-cyan-500">
+                <h4 class="font-bold text-lg mb-2">物質本質</h4>
+                <p class="text-slate-400 text-sm">金屬活性越大，反應越快。例：鉀 > 鈉 > 鋰</p>
+            </div>
+            <div class="glass-card border-t-4 border-blue-500">
+                <h4 class="font-bold text-lg mb-2">濃度</h4>
+                <p class="text-slate-400 text-sm">濃度高 → 粒子數多 → 碰撞機率高</p>
+            </div>
+            <div class="glass-card border-t-4 border-emerald-500">
+                <h4 class="font-bold text-lg mb-2">接觸面積</h4>
+                <p class="text-slate-400 text-sm">顆粒越細（粉末）→ 接觸機會多 → 反應越快</p>
+            </div>
+            <div class="glass-card border-t-4 border-rose-500 md:col-span-2">
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="md:w-1/2">
+                        <h4 class="font-bold text-lg mb-2 text-rose-400">溫度（極重要）</h4>
+                        <p class="text-slate-400 text-sm">溫度高 → 粒子動能大：<br>1. 碰撞次數增多<br>2. <span class="text-white font-bold">有效碰撞比例大幅提升</span></p>
+                    </div>
+                    <div class="md:w-1/2 md:border-l md:border-slate-700 md:pl-4">
+                        <h4 class="font-bold text-lg mb-2 text-amber-400">催化劑</h4>
+                        <p class="text-slate-400 text-sm">改變反應路徑、降低活化能。反應前後<span class="text-white font-bold">性質與質量不變</span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-card flex items-center justify-center italic text-slate-500 text-sm">
+                因素越大，速率通常越快
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: 常見陷阱題 -->
+    <div class="slide" id="s6">
+        <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-rose-500 pl-6">六、考前陷阱題預警</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl">
+            <div class="trap-card glass-card cursor-default">
+                <h4 class="text-lg font-bold mb-3 text-slate-300">陷阱一：催化劑與產量</h4>
+                <p class="text-slate-400 text-sm italic mb-3">「加入催化劑後，氧氣產生的量會變多嗎？」</p>
+                <div class="p-3 bg-rose-900/20 border border-rose-500/30 rounded text-rose-400 font-bold text-sm">
+                    不會！只會變快，不影響最終產量。
+                </div>
+            </div>
+            <div class="trap-card glass-card cursor-default">
+                <h4 class="text-lg font-bold mb-3 text-slate-300">陷阱二：溫度的微觀機制</h4>
+                <p class="text-slate-400 text-sm italic mb-3">「升溫的主要原因是增加碰撞次數嗎？」</p>
+                <div class="p-3 bg-rose-900/20 border border-rose-500/30 rounded text-rose-400 font-bold text-sm">
+                    重點在「比例」！升溫讓更多粒子跨過反應門檻。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: 總結 -->
+    <div class="slide" id="s7">
+        <div class="text-center">
+            <h2 class="text-3xl md:text-5xl font-black text-white mb-10">4-1 重點總整理</h2>
+            <div class="glass-card inline-block px-10 py-8 mb-8">
+                <p class="text-2xl md:text-3xl font-light italic leading-relaxed text-slate-300">
+                    「反應速率的本質：<br>粒子碰撞有多<span class="text-orange-400 font-bold">頻繁</span>、有效碰撞有<span class="text-rose-400 font-bold">多少</span>」
+                </p>
+            </div>
+            <div class="flex flex-col md:flex-row justify-center gap-8">
+                <div class="glass-card text-center">
+                    <div class="text-2xl font-bold text-white mb-1">碰撞次數</div>
+                    <div class="text-slate-500 text-sm">濃度、接觸面積</div>
+                </div>
+                <div class="glass-card text-center">
+                    <div class="text-2xl font-bold text-white mb-1">有效碰撞比例</div>
+                    <div class="text-slate-500 text-sm">溫度、催化劑</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-bar-bottom fixed bottom-6 left-1/2 -translate-x-1/2 flex flex-row gap-4 z-50 items-center">
+        <button id="prevBtn" class="nav-btn whitespace-nowrap" onclick="move(-1)">前一頁</button>
+        <div class="flex items-center px-4 font-bold text-slate-500 whitespace-nowrap" id="pageNum">1 / 8</div>
+        <button id="nextBtn" class="nav-btn whitespace-nowrap" onclick="move(1)">下一頁</button>
+    </div>
+
+    <script>
+        let current = 0;
+        const total = 8;
+
+        function update() {
+            document.querySelectorAll('.slide').forEach((s, i) => {
+                s.classList.toggle('active', i === current);
+            });
+            document.getElementById('prevBtn').disabled = current === 0;
+            document.getElementById('nextBtn').disabled = current === total - 1;
+            document.getElementById('pageNum').innerText = (current + 1) + ' / ' + total;
+            resetCollision();
+        }
+
+        function move(n) {
+            current = Math.max(0, Math.min(total - 1, current + n));
+            update();
+        }
+
+        // 碰撞動畫
+        function runCollision(isEffective) {
+            var atomA = document.getElementById('atomA');
+            var atomB = document.getElementById('atomB');
+            var result = document.getElementById('collisionResult');
+
+            if (isEffective) {
+                atomA.style.transform = 'translateX(135px)';
+                atomB.style.transform = 'translateX(-135px)';
+                setTimeout(function() {
+                    atomA.querySelector('circle').setAttribute('fill', '#facc15');
+                    atomB.querySelector('circle').setAttribute('fill', '#facc15');
+                    result.style.opacity = '1';
+                }, 600);
+            } else {
+                atomA.style.transform = 'translateX(100px)';
+                atomB.style.transform = 'translateX(-100px)';
+                setTimeout(function() {
+                    atomA.style.transform = 'translateX(-30px)';
+                    atomB.style.transform = 'translateX(30px)';
+                }, 600);
+            }
+        }
+
+        function resetCollision() {
+            var atomA = document.getElementById('atomA');
+            var atomB = document.getElementById('atomB');
+            var result = document.getElementById('collisionResult');
+            if (atomA) {
+                atomA.style.transform = 'translateX(0)';
+                atomB.style.transform = 'translateX(0)';
+                atomA.querySelector('circle').setAttribute('fill', '#f97316');
+                atomB.querySelector('circle').setAttribute('fill', '#3b82f6');
+                result.style.opacity = '0';
+            }
+        }
+
+        update();
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') move(1);
+            if (e.key === 'ArrowLeft') move(-1);
+        });
+    </script>
+</body>
+</html>
