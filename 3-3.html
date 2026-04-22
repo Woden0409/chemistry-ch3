@@ -260,7 +260,10 @@
                         <span class="text-yellow-300 font-black text-xl" id="show-m">117</span>
                         <span class="text-yellow-300 text-sm"> g</span>
                     </div>
-                    <p class="text-[10px] text-slate-600 mt-2 text-center">NaCl 分子量 = 58.5，試試調整看看！</p>
+                    <div class="flex items-center justify-center gap-2 mt-2">
+                        <p class="text-[10px] text-slate-600 text-center">NaCl 分子量 = 58.5</p>
+                        <button class="hint-btn text-[10px]" onclick="resetCalc1()">重置</button>
+                    </div>
                 </div>
 
                 <!-- 計算器 2: M × V = n → 結合質量 -->
@@ -307,7 +310,10 @@
                             <span class="text-yellow-300 text-sm"> g</span>
                         </div>
                     </div>
-                    <p class="text-[10px] text-slate-600 mt-2 text-center">NaOH 分子量 = 40，常見考題：配製指定濃度需要多少克？</p>
+                    <div class="flex items-center justify-center gap-2 mt-2">
+                        <p class="text-[10px] text-slate-600 text-center">NaOH 分子量 = 40</p>
+                        <button class="hint-btn text-[10px]" onclick="resetCalc2()">重置</button>
+                    </div>
                     <button class="quiz-trigger mt-2 w-full" onclick="showQuiz(0)">計算小測驗</button>
                 </div>
             </div>
@@ -537,6 +543,18 @@
         function showQuiz(i){var q=quizzes[i];document.getElementById('quizTitle').innerText=q.q;var h='';for(var j=0;j<q.opts.length;j++)h+='<button class="quiz-option" onclick="checkAnswer('+i+','+j+',this)">'+q.opts[j]+'</button>';document.getElementById('quizOptions').innerHTML=h;document.getElementById('quizFeedback').className='quiz-feedback';document.getElementById('quizModal').classList.add('show');}
         function checkAnswer(i,s,el){var q=quizzes[i];var os=document.querySelectorAll('.quiz-option');os.forEach(function(o){o.classList.add('chosen')});os[q.ans].classList.add('correct');if(s!==q.ans)el.classList.add('wrong');else score++;answered++;document.getElementById('score').innerText=score;document.getElementById('totalQ').innerText=answered;var f=document.getElementById('quizFeedback');f.innerHTML=(s===q.ans?'<span class="text-emerald-400">正確！</span>':'<span class="text-rose-400">錯誤。</span>')+'<br><span class="text-slate-400">'+q.explain+'</span>';f.className='quiz-feedback show';f.style.background=s===q.ans?'rgba(6,95,70,0.3)':'rgba(127,29,29,0.3)';}
         function closeQuiz(){document.getElementById('quizModal').classList.remove('show');}
+
+        function resetCalc1() {
+            document.getElementById('slider-n').value = 2;
+            document.getElementById('slider-mw').value = 58.5;
+            calcMass();
+        }
+        function resetCalc2() {
+            document.getElementById('slider-M').value = 0.5;
+            document.getElementById('slider-V').value = 2;
+            document.getElementById('slider-mw2').value = 40;
+            calcChain();
+        }
 
         update();
 
