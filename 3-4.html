@@ -296,6 +296,56 @@
             color: #22d3ee;
             font-weight: bold;
         }
+        /* ===== 測驗系統 ===== */
+        .score-badge {
+            position: fixed; top: 16px; right: 16px; z-index: 60;
+            background: rgba(30,41,59,0.9); border: 1px solid #475569;
+            border-radius: 12px; padding: 6px 14px;
+            font-size: 0.8rem; font-weight: bold; color: #94a3b8;
+        }
+        .score-badge span { color: #facc15; }
+        .quiz-trigger {
+            background: #1e40af; color: white; border: 1px solid #3b82f6;
+            padding: 6px 16px; border-radius: 8px; font-size: 0.8rem;
+            font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        .quiz-trigger:hover { background: #2563eb; }
+        .quiz-modal {
+            display: none; position: fixed; inset: 0; z-index: 100;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+            align-items: center; justify-content: center;
+        }
+        .quiz-modal.show { display: flex; }
+        .quiz-box {
+            background: #1e293b; border: 1px solid #334155;
+            border-radius: 20px; padding: 32px; max-width: 500px; width: 90%;
+        }
+        .quiz-option {
+            display: block; width: 100%; text-align: left;
+            padding: 12px 16px; margin: 6px 0; border-radius: 10px;
+            background: #334155; border: 2px solid #475569;
+            color: #f1f5f9; font-size: 0.95rem; cursor: pointer; transition: 0.2s;
+        }
+        .quiz-option:hover:not(.chosen) { border-color: #60a5fa; }
+        .quiz-option.correct { background: #065f46; border-color: #10b981; }
+        .quiz-option.wrong { background: #7f1d1d; border-color: #ef4444; }
+        .quiz-option.chosen { pointer-events: none; }
+        .quiz-feedback { margin-top: 12px; padding: 10px; border-radius: 8px; font-size: 0.85rem; display: none; }
+        .quiz-feedback.show { display: block; }
+        /* 提示按鈕 */
+        .hint-btn {
+            background: transparent; border: 1px dashed #64748b; color: #64748b;
+            padding: 4px 12px; border-radius: 6px; font-size: 0.75rem;
+            cursor: pointer; transition: 0.2s;
+        }
+        .hint-btn:hover { color: #94a3b8; border-color: #94a3b8; }
+        .hint-box {
+            display: none; margin-top: 8px; padding: 10px;
+            background: rgba(30,41,59,0.9); border: 1px solid #475569;
+            border-radius: 8px; font-size: 0.8rem; color: #94a3b8;
+        }
+        .hint-box.show { display: block; }
+
         @media (max-width: 768px) {
             body { overflow: auto; height: auto; }
             .slide { padding: 20px 16px; height: auto; min-height: 100vh; }
@@ -407,6 +457,8 @@
                     <button class="nav-btn text-xs py-1 px-3" onclick="heatUp()">模擬放熱</button>
                     <button class="nav-btn text-xs py-1 px-3 bg-slate-600" onclick="resetHeat()">重置</button>
                 </div>
+                <button class="hint-btn mt-2" onclick="toggleHint('hint-heat')">為什麼放熱？</button>
+                <div class="hint-box" id="hint-heat">因為 H⁺ 和 OH⁻ 結合形成 H₂O 時會釋放能量，這是所有中和反應的共同特徵。</div>
             </div>
 
             <!-- 卡片 2：產生新物質 -->
@@ -472,6 +524,9 @@
         </div>
     </div>
 
+    <!-- Quiz after 中和特徵 -->
+    <!-- embedded in slide s2 area, triggered by button -->
+
     <!-- Slide 4: 完全中和的本質 (計算) -->
     <div class="slide" id="s3">
         <h2 class="text-2xl md:text-4xl font-bold mb-10 self-start border-l-8 border-cyan-500 pl-6">三、完全中和的計算邏輯</h2>
@@ -512,14 +567,21 @@
                     </div>
                     <p class="text-xs font-bold text-purple-400 mt-1">錐形瓶：NaOH + 酚酞</p>
                 </div>
-                <!-- 動態狀態標示 -->
-                <div id="titration-status" class="mt-3 p-2 rounded-lg text-center text-sm font-bold transition-all duration-500" style="background:rgba(236,72,153,0.15); color:#ec4899;">
-                    <span id="status-dot" class="inline-block w-3 h-3 rounded-full mr-2" style="background:#ec4899;"></span>
-                    <span id="status-text">鹼性 — 酚酞呈粉紅色</span>
+                <!-- 即時 pH 顯示 -->
+                <div class="mt-3 flex items-center gap-3">
+                    <div class="px-3 py-1 rounded-lg bg-slate-800 border border-slate-700 text-center">
+                        <span class="text-[10px] text-slate-500 block">pH 值</span>
+                        <span class="text-xl font-black text-white" id="ph-display">13.0</span>
+                    </div>
+                    <div id="titration-status" class="flex-1 p-2 rounded-lg text-center text-sm font-bold transition-all duration-500" style="background:rgba(236,72,153,0.15); color:#ec4899;">
+                        <span id="status-dot" class="inline-block w-3 h-3 rounded-full mr-2" style="background:#ec4899;"></span>
+                        <span id="status-text">鹼性 — 酚酞呈粉紅色</span>
+                    </div>
                 </div>
-                <div class="mt-3 flex gap-4">
+                <div class="mt-3 flex gap-3">
                     <button class="nav-btn text-xs" onclick="startTitration()">開始滴定</button>
                     <button class="nav-btn text-xs bg-slate-600" onclick="resetTitration()">重置</button>
+                    <button class="quiz-trigger" onclick="showQuiz(0)">小測驗</button>
                 </div>
             </div>
             <div class="space-y-6">
@@ -612,6 +674,19 @@
     </div>
 
     <!-- 控制按鈕 -->
+    <!-- 計分板 -->
+    <div class="score-badge">正確：<span id="score">0</span> / <span id="totalQ">0</span></div>
+
+    <!-- 測驗彈窗 -->
+    <div class="quiz-modal" id="quizModal">
+        <div class="quiz-box">
+            <h3 class="text-lg font-bold mb-4" id="quizTitle"></h3>
+            <div id="quizOptions"></div>
+            <div class="quiz-feedback" id="quizFeedback"></div>
+            <button class="nav-btn text-xs mt-4" onclick="closeQuiz()">關閉</button>
+        </div>
+    </div>
+
     <div class="nav-bar-bottom fixed bottom-6 left-1/2 -translate-x-1/2 flex flex-row gap-4 z-50 items-center">
         <button id="prevBtn" class="nav-btn whitespace-nowrap" onclick="move(-1)">前一頁</button>
         <div class="flex items-center px-4 font-bold text-slate-500 whitespace-nowrap" id="pageNum">1 / 8</div>
@@ -733,6 +808,87 @@
             resetTitration();
             update();
         }
+
+        // ===== 測驗系統 =====
+        var score = 0;
+        var answered = 0;
+        var quizzes = [
+            {
+                title: '滴定測驗',
+                q: '酸鹼滴定中，酚酞指示劑在鹼性溶液中是什麼顏色？',
+                opts: ['無色', '��紅色', '藍色', '黃色'],
+                ans: 1,
+                explain: '酚酞在鹼性（pH>8.2）呈粉紅色，在酸性或中性呈無色。滴定到達終點時，粉紅色消失代表中和完成。'
+            },
+            {
+                title: '中和反應測驗',
+                q: '下列關於中和反應的敘述，何者正確？',
+                opts: ['中和後溶液一定是 pH=7', '中和反應會吸熱', '中和的本質是 H⁺ + OH⁻ → H₂O', '催化劑可以加速中和反應'],
+                ans: 2,
+                explain: '中和反應的本質是氫離子與氫氧根離子結合成水。中和後 pH 不一定等於 7（要看酸鹼強弱），且中和反應是放熱反應。'
+            }
+        ];
+
+        function showQuiz(idx) {
+            var q = quizzes[idx];
+            document.getElementById('quizTitle').innerText = q.q;
+            var html = '';
+            for (var i = 0; i < q.opts.length; i++) {
+                html += '<button class="quiz-option" onclick="checkAnswer(' + idx + ',' + i + ',this)">' + q.opts[i] + '</button>';
+            }
+            document.getElementById('quizOptions').innerHTML = html;
+            document.getElementById('quizFeedback').className = 'quiz-feedback';
+            document.getElementById('quizFeedback').innerHTML = '';
+            document.getElementById('quizModal').classList.add('show');
+        }
+
+        function checkAnswer(idx, selected, el) {
+            var q = quizzes[idx];
+            var opts = document.querySelectorAll('.quiz-option');
+            opts.forEach(function(o) { o.classList.add('chosen'); });
+            opts[q.ans].classList.add('correct');
+            if (selected !== q.ans) {
+                el.classList.add('wrong');
+            } else {
+                score++;
+            }
+            answered++;
+            document.getElementById('score').innerText = score;
+            document.getElementById('totalQ').innerText = answered;
+            var fb = document.getElementById('quizFeedback');
+            fb.innerHTML = (selected === q.ans ? '<span class="text-emerald-400">正確！</span>' : '<span class="text-rose-400">錯誤。</span>') + '<br><span class="text-slate-400">' + q.explain + '</span>';
+            fb.className = 'quiz-feedback show';
+            fb.style.background = selected === q.ans ? 'rgba(6,95,70,0.3)' : 'rgba(127,29,29,0.3)';
+        }
+
+        function closeQuiz() {
+            document.getElementById('quizModal').classList.remove('show');
+        }
+
+        // ===== 提示系統 =====
+        function toggleHint(id) {
+            var el = document.getElementById(id);
+            el.classList.toggle('show');
+        }
+
+        // ===== 滴定 pH 即時顯�� =====
+        function updatePH(val) {
+            document.getElementById('ph-display').innerText = val;
+        }
+
+        // 更新 startTitration 加入 pH 變化
+        var _origStart = startTitration;
+        startTitration = function() {
+            _origStart();
+            setTimeout(function() { updatePH('10.5'); }, 1500);
+            setTimeout(function() { updatePH('8.2'); }, 3000);
+            setTimeout(function() { updatePH('7.0'); }, 4500);
+        };
+        var _origReset = resetTitration;
+        resetTitration = function() {
+            _origReset();
+            updatePH('13.0');
+        };
 
         update();
 
